@@ -1,0 +1,17 @@
+# Godot 4+ specific ignores
+# Editor cache / imported assets are regenerated automatically.
+.godot/
+/android/
+
+# Keep .import and .uid files: they hold import settings and stable resource UIDs.
+!*.import
+!*.uid
+
+# Export output
+/build/
+/exports/
+*.translation
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
