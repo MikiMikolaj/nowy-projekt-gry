@@ -4,6 +4,7 @@ extends Node
 
 signal transitioned(from_state: StringName, to_state: StringName)
 
+## Leave empty to start in the first child State.
 @export var initial_state: State
 
 var current_state: State
@@ -19,8 +20,10 @@ func _ready() -> void:
 	# Wait for the owner (e.g. the player) to finish _ready so enter() can safely use its nodes.
 	if owner != null and not owner.is_node_ready():
 		await owner.ready
+	if initial_state == null and not _states.is_empty():
+		initial_state = _states.values()[0]
 	if initial_state == null:
-		push_error("StateMachine '%s' has no initial_state set." % get_path())
+		push_error("StateMachine '%s' has no State children." % get_path())
 		return
 	current_state = initial_state
 	current_state.enter()

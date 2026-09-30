@@ -1,3 +1,107 @@
 [gd_scene format=3 uid="uid://cn7khkktnpeo7"]
 
+[ext_resource type="PackedScene" uid="uid://bmvvik2uxnhyr" path="res://entities/player/player.tscn" id="2_6txw3"]
+[ext_resource type="PackedScene" uid="uid://qqmcgl43v8yd" path="res://levels/playground/block.tscn" id="2_43xo0"]
+[ext_resource type="PackedScene" uid="uid://c54dcrrfwry7d" path="res://camera/game_camera.tscn" id="3_43xo0"]
+
 [node name="Playground" type="Node2D" unique_id=1492535667]
+
+[node name="Level" type="Node2D" parent="." unique_id=225515867]
+
+[node name="WallLeft" parent="Level" unique_id=229507331 instance=ExtResource("2_43xo0")]
+position = Vector2(-128, -1024)
+size = Vector2(128, 1152)
+
+[node name="FloorStart" parent="Level" unique_id=1548144986 instance=ExtResource("2_43xo0")]
+size = Vector2(2048, 128)
+
+[node name="Stair1" parent="Level" unique_id=2096030790 instance=ExtResource("2_43xo0")]
+position = Vector2(1152, -128)
+size = Vector2(192, 64)
+color = Color(0.47, 0.49, 0.55, 1)
+
+[node name="Stair2" parent="Level" unique_id=659175288 instance=ExtResource("2_43xo0")]
+position = Vector2(1472, -256)
+size = Vector2(192, 64)
+color = Color(0.47, 0.49, 0.55, 1)
+
+[node name="Stair3" parent="Level" unique_id=1075686039 instance=ExtResource("2_43xo0")]
+position = Vector2(1792, -384)
+size = Vector2(192, 64)
+color = Color(0.47, 0.49, 0.55, 1)
+
+[node name="FloorShaft" parent="Level" unique_id=831235778 instance=ExtResource("2_43xo0")]
+position = Vector2(2048, 0)
+size = Vector2(896, 128)
+
+[node name="ShaftWallLeft" parent="Level" unique_id=1911345446 instance=ExtResource("2_43xo0")]
+position = Vector2(2176, -640)
+size = Vector2(64, 448)
+
+[node name="ShaftWallRight" parent="Level" unique_id=408618330 instance=ExtResource("2_43xo0")]
+position = Vector2(2496, -640)
+size = Vector2(128, 640)
+
+[node name="ShaftLedge" parent="Level" unique_id=1118429255 instance=ExtResource("2_43xo0")]
+position = Vector2(2624, -640)
+size = Vector2(192, 64)
+color = Color(0.47, 0.49, 0.55, 1)
+
+[node name="FloorPreSpikes" parent="Level" unique_id=1024725855 instance=ExtResource("2_43xo0")]
+position = Vector2(3392, 0)
+size = Vector2(192, 128)
+
+[node name="SpikePitFloor" parent="Level" unique_id=1556955076 instance=ExtResource("2_43xo0")]
+position = Vector2(3584, 64)
+size = Vector2(256, 128)
+color = Color(0.45, 0.28, 0.28, 1)
+
+[node name="FloorArena" parent="Level" unique_id=1130351479 instance=ExtResource("2_43xo0")]
+position = Vector2(3840, 0)
+size = Vector2(1536, 128)
+
+[node name="ArenaPlatform1" parent="Level" unique_id=811064881 instance=ExtResource("2_43xo0")]
+position = Vector2(4288, -192)
+size = Vector2(256, 64)
+color = Color(0.47, 0.49, 0.55, 1)
+
+[node name="ArenaPlatform2" parent="Level" unique_id=781100944 instance=ExtResource("2_43xo0")]
+position = Vector2(4928, -192)
+size = Vector2(256, 64)
+color = Color(0.47, 0.49, 0.55, 1)
+
+[node name="WallRight" parent="Level" unique_id=406648231 instance=ExtResource("2_43xo0")]
+position = Vector2(5376, -1024)
+size = Vector2(128, 1152)
+
+[node name="Markers" type="Node2D" parent="." unique_id=666384863]
+
+[node name="PlayerSpawn" type="Marker2D" parent="Markers" unique_id=174558604]
+position = Vector2(192, -48)
+
+[node name="TrainingDummy" type="Marker2D" parent="Markers" unique_id=1533197239]
+position = Vector2(704, 0)
+
+[node name="SpikePit" type="Marker2D" parent="Markers" unique_id=1639151282]
+position = Vector2(3712, 64)
+
+[node name="Walker1" type="Marker2D" parent="Markers" unique_id=691163564]
+position = Vector2(4160, 0)
+
+[node name="Walker2" type="Marker2D" parent="Markers" unique_id=1117549623]
+position = Vector2(4736, 0)
+
+[node name="Walker3" type="Marker2D" parent="Markers" unique_id=1504296636]
+position = Vector2(5248, 0)
+
+[node name="KillPlane" type="Marker2D" parent="Markers" unique_id=1467328140]
+position = Vector2(2688, 512)
+
+[node name="Player" parent="." unique_id=914471942 instance=ExtResource("2_6txw3")]
+position = Vector2(192, -48)
+
+[node name="GameCamera" parent="." unique_id=48149646 instance=ExtResource("3_43xo0")]
+limit_left = -128
+limit_top = -1024
+limit_right = 5504
+limit_bottom = 384

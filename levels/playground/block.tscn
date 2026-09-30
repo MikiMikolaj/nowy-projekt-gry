@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://qqmcgl43v8yd"]
+
+[ext_resource type="Script" uid="uid://bvaxoj5gnp2mw" path="res://levels/playground/block.gd" id="1_n4fsy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n4fsy"]
+resource_local_to_scene = true
+size = Vector2(64, 64)
+
+[node name="Block" type="StaticBody2D" unique_id=229507331]
+collision_mask = 0
+script = ExtResource("1_n4fsy")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=696465689]
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 2
+color = Color(0.33, 0.35, 0.4, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=861309236]
+position = Vector2(32, 32)
+shape = SubResource("RectangleShape2D_n4fsy")

@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://bmvvik2uxnhyr"]
+
+[ext_resource type="Script" uid="uid://lu8k66rt7s03" path="res://entities/player/player.gd" id="1_8fjmc"]
+[ext_resource type="Script" uid="uid://dkv8uedrmn5l4" path="res://core/state_machine/state_machine.gd" id="2_qiwj3"]
+[ext_resource type="Script" uid="uid://ds4lj1rkrcxu4" path="res://entities/player/states/idle.gd" id="3_26q78"]
+[ext_resource type="Script" uid="uid://brgf5bbcal78l" path="res://entities/player/states/run.gd" id="4_bectd"]
+[ext_resource type="Script" uid="uid://dys68uju3fugs" path="res://entities/player/states/jump.gd" id="5_wvtmh"]
+[ext_resource type="Script" uid="uid://4rc0djewh17o" path="res://entities/player/states/fall.gd" id="6_7thud"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8fjmc"]
+size = Vector2(44, 96)
+
+[node name="Player" type="CharacterBody2D" unique_id=914471942 groups=["player"]]
+collision_layer = 2
+script = ExtResource("1_8fjmc")
+
+[node name="Visual" type="Node2D" parent="." unique_id=597036171]
+position = Vector2(0, 48)
+
+[node name="Body" type="ColorRect" parent="Visual" unique_id=2112160506]
+offset_left = -22.0
+offset_top = -96.0
+offset_right = 22.0
+mouse_filter = 2
+color = Color(0.35, 0.75, 1, 1)
+
+[node name="Eye" type="ColorRect" parent="Visual" unique_id=367550658]
+offset_left = 6.0
+offset_top = -84.0
+offset_right = 18.0
+offset_bottom = -72.0
+mouse_filter = 2
+color = Color(0.08, 0.1, 0.16, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2007957517]
+shape = SubResource("RectangleShape2D_8fjmc")
+
+[node name="StateMachine" type="Node" parent="." unique_id=49486731]
+script = ExtResource("2_qiwj3")
+
+[node name="Idle" type="Node" parent="StateMachine" unique_id=1251905805]
+script = ExtResource("3_26q78")
+
+[node name="Run" type="Node" parent="StateMachine" unique_id=82336309]
+script = ExtResource("4_bectd")
+
+[node name="Jump" type="Node" parent="StateMachine" unique_id=540657372]
+script = ExtResource("5_wvtmh")
+
+[node name="Fall" type="Node" parent="StateMachine" unique_id=1174429159]
+script = ExtResource("6_7thud")
