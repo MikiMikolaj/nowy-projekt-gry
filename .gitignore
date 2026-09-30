@@ -15,3 +15,6 @@
 # OS / editor junk
 .DS_Store
 Thumbs.db
+
+# MCP plugin runtime cache
+addons/godot_mcp/cache/
