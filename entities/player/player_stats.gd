@@ -49,6 +49,11 @@ enum DashDirectionMode { HORIZONTAL, EIGHT_WAY }
 ## Ground dash can be jump-cancelled, keeping its horizontal speed ("dash-jump").
 @export var dash_jump_enabled: bool = true
 
+@export_group("Dash Afterimage")
+@export var afterimage_count: int = 3
+@export var afterimage_fade_time: float = 0.25
+@export_range(0.0, 1.0) var afterimage_alpha: float = 0.5
+
 @export_group("Squash & Stretch")
 @export var jump_stretch: Vector2 = Vector2(0.8, 1.2)
 @export var land_squash: Vector2 = Vector2(1.2, 0.8)

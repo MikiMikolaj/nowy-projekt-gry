@@ -1,4 +1,4 @@
-# Jump: rising after a jump. Releasing jump early cuts the rise (variable jump height).
+# Jump: rising after a ground or wall jump. Releasing jump early cuts the rise (variable jump height).
 extends PlayerState
 
 var _was_cut: bool = false
@@ -6,10 +6,18 @@ var _was_cut: bool = false
 
 func enter() -> void:
 	_was_cut = false
-	player.jump()
+	player.start_jump()
 
 
 func physics_update(delta: float) -> void:
+	if player.wants_dash():
+		state_machine.transition_to(&"Dash")
+		return
+	# Wall jump while still rising (e.g. chaining up a shaft): re-enter this state for a fresh jump.
+	if player.has_buffered_jump() and player.can_wall_jump():
+		state_machine.transition_to(&"Jump")
+		return
+
 	# Checked every frame (not just on release) so a jump buffered and released before landing is still short.
 	if not _was_cut and not Input.is_action_pressed(&"jump") and player.velocity.y < 0.0:
 		player.velocity.y *= player.stats.jump_cut_multiplier

@@ -6,6 +6,8 @@
 [ext_resource type="Script" uid="uid://brgf5bbcal78l" path="res://entities/player/states/run.gd" id="4_bectd"]
 [ext_resource type="Script" uid="uid://dys68uju3fugs" path="res://entities/player/states/jump.gd" id="5_wvtmh"]
 [ext_resource type="Script" uid="uid://4rc0djewh17o" path="res://entities/player/states/fall.gd" id="6_7thud"]
+[ext_resource type="Script" uid="uid://bsi33mb5dt38e" path="res://entities/player/states/wall_slide.gd" id="7_qiwj3"]
+[ext_resource type="Script" uid="uid://n1pkgxb0y2qk" path="res://entities/player/states/dash.gd" id="8_26q78"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8fjmc"]
 size = Vector2(44, 96)
@@ -49,3 +51,15 @@ script = ExtResource("5_wvtmh")
 
 [node name="Fall" type="Node" parent="StateMachine" unique_id=1174429159]
 script = ExtResource("6_7thud")
+
+[node name="WallSlide" type="Node" parent="StateMachine" unique_id=1929882765]
+script = ExtResource("7_qiwj3")
+
+[node name="Dash" type="Node" parent="StateMachine" unique_id=1734740217]
+script = ExtResource("8_26q78")
+
+[node name="WallCheckLeft" type="RayCast2D" parent="." unique_id=1798843103]
+target_position = Vector2(-26, 0)
+
+[node name="WallCheckRight" type="RayCast2D" parent="." unique_id=813300203]
+target_position = Vector2(26, 0)

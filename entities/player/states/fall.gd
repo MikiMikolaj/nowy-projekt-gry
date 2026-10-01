@@ -1,8 +1,11 @@
-# Fall: airborne and not rising. Handles coyote jumps and landing (with jump buffer).
+# Fall: airborne and not rising. Handles coyote/wall jumps, landing (with jump buffer) and wall slide entry.
 extends PlayerState
 
 
 func physics_update(delta: float) -> void:
+	if player.wants_dash():
+		state_machine.transition_to(&"Dash")
+		return
 	if player.wants_jump():
 		state_machine.transition_to(&"Jump")
 		return
@@ -20,3 +23,5 @@ func physics_update(delta: float) -> void:
 			state_machine.transition_to(&"Run")
 		else:
 			state_machine.transition_to(&"Idle")
+	elif player.should_wall_slide():
+		state_machine.transition_to(&"WallSlide")
