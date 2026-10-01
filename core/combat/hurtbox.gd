@@ -1,28 +1,36 @@
-# Hurtbox: an Area2D that receives hits from Hitboxes and forwards the damage to a HealthComponent.
+# Hurtbox: an Area2D that can be hit by Hitboxes. Forwards damage to a HealthComponent if it has one.
 class_name Hurtbox
 extends Area2D
 
+## A hit that counted. Listen to this for reactions (flash, knockback, wobble).
 signal hit_received(hitbox: Hitbox)
+## A hit that touched us while invincible (used later for the perfect dodge).
+signal hit_evaded(hitbox: Hitbox)
 
+## Leave empty to use a sibling HealthComponent. With none at all, hits still register (infinite HP).
 @export var health: HealthComponent
 
 
 func _ready() -> void:
-	# Hurtboxes detect hitboxes, not the other way around, so each hit is resolved in one place.
-	monitoring = true
-	monitorable = false
-	area_entered.connect(_on_area_entered)
+	# Hitboxes do the detecting; a hurtbox only needs to be detectable.
+	monitoring = false
+	monitorable = true
+	if health == null:
+		for sibling: Node in get_parent().get_children():
+			if sibling is HealthComponent:
+				health = sibling as HealthComponent
+				break
 
 
-func _on_area_entered(area: Area2D) -> void:
-	var hitbox: Hitbox = area as Hitbox
-	if hitbox == null or hitbox.attack_data == null:
-		return
+# Called by a Hitbox that overlaps us. Returns true if the hit counted.
+func receive_hit(hitbox: Hitbox) -> bool:
 	# Never hurt yourself with your own attack.
 	if hitbox.attacker != null and hitbox.attacker == owner:
-		return
-	# Reactions (flash, knockback) listen to this; emitted even while invincible so perfect dodge can see it.
+		return false
+	if health != null and health.invincible:
+		hit_evaded.emit(hitbox)
+		return false
 	hit_received.emit(hitbox)
-	if health != null and not health.invincible:
+	if health != null:
 		health.take_damage(hitbox.attack_data.damage, hitbox.attacker)
-		hitbox.register_hit(self)
+	return true

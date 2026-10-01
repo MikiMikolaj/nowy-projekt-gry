@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="AttackData" format=3]
+
+[ext_resource type="Script" path="res://core/combat/attack_data.gd" id="1_pmmwr"]
+
+[resource]
+script = ExtResource("1_pmmwr")
+lunge = 70.0
+knockback = 280.0

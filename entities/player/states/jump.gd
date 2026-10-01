@@ -13,6 +13,9 @@ func physics_update(delta: float) -> void:
 	if player.wants_dash():
 		state_machine.transition_to(&"Dash")
 		return
+	if player.wants_attack():
+		state_machine.transition_to(&"Attack")
+		return
 	# Wall jump while still rising (e.g. chaining up a shaft): re-enter this state for a fresh jump.
 	if player.has_buffered_jump() and player.can_wall_jump():
 		state_machine.transition_to(&"Jump")

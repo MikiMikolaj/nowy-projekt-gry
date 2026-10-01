@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://cn7khkktnpeo7"]
 
+[ext_resource type="PackedScene" uid="uid://dbwygypcq5f60" path="res://levels/playground/spikes.tscn" id="2_1fyqe"]
 [ext_resource type="PackedScene" uid="uid://bmvvik2uxnhyr" path="res://entities/player/player.tscn" id="2_6txw3"]
 [ext_resource type="PackedScene" uid="uid://qqmcgl43v8yd" path="res://levels/playground/block.tscn" id="2_43xo0"]
 [ext_resource type="PackedScene" uid="uid://c54dcrrfwry7d" path="res://camera/game_camera.tscn" id="3_43xo0"]
+[ext_resource type="PackedScene" uid="uid://uxsaort8omlx" path="res://entities/enemies/training_dummy/training_dummy.tscn" id="4_k01ge"]
 
 [node name="Playground" type="Node2D" unique_id=1492535667]
 
@@ -74,6 +76,9 @@ color = Color(0.47, 0.49, 0.55, 1)
 position = Vector2(5376, -1024)
 size = Vector2(128, 1152)
 
+[node name="Spikes" parent="Level" unique_id=463901192 instance=ExtResource("2_1fyqe")]
+position = Vector2(3712, 64)
+
 [node name="Markers" type="Node2D" parent="." unique_id=666384863]
 
 [node name="PlayerSpawn" type="Marker2D" parent="Markers" unique_id=174558604]
@@ -105,3 +110,6 @@ limit_left = -128
 limit_top = -1024
 limit_right = 5504
 limit_bottom = 384
+
+[node name="TrainingDummy" parent="." unique_id=519304952 instance=ExtResource("4_k01ge")]
+position = Vector2(704, 0)

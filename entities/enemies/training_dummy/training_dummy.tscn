@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://uxsaort8omlx"]
+
+[ext_resource type="Script" uid="uid://c32rr54h4g6jx" path="res://entities/enemies/training_dummy/training_dummy.gd" id="1_r0jxf"]
+[ext_resource type="Script" uid="uid://cdexfwkwy45l" path="res://core/combat/hurtbox.gd" id="2_qjdjk"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r0jxf"]
+size = Vector2(56, 96)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qjdjk"]
+size = Vector2(56, 96)
+
+[node name="TrainingDummy" type="StaticBody2D" unique_id=519304952]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_r0jxf")
+
+[node name="Visual" type="Node2D" parent="." unique_id=1338793379]
+
+[node name="Body" type="ColorRect" parent="Visual" unique_id=850542921]
+offset_left = -28.0
+offset_top = -96.0
+offset_right = 28.0
+mouse_filter = 2
+color = Color(0.95, 0.65, 0.25, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=273583585]
+position = Vector2(0, -48)
+shape = SubResource("RectangleShape2D_r0jxf")
+
+[node name="Hurtbox" type="Area2D" parent="." unique_id=461467384]
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("2_qjdjk")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=870680998]
+position = Vector2(0, -48)
+shape = SubResource("RectangleShape2D_qjdjk")

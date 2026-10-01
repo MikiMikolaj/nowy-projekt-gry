@@ -6,6 +6,9 @@ func physics_update(delta: float) -> void:
 	if player.wants_dash():
 		state_machine.transition_to(&"Dash")
 		return
+	if player.wants_attack():
+		state_machine.transition_to(&"Attack")
+		return
 	if player.wants_jump():
 		state_machine.transition_to(&"Jump")
 		return

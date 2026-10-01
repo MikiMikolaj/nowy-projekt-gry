@@ -6,7 +6,12 @@ extends CharacterBody2D
 @export var stats: PlayerStats = preload("res://entities/player/player_stats.tres")
 
 ## 1 = facing right, -1 = facing left.
-var facing: int = 1
+var facing: int = 1:
+	set(value):
+		facing = value
+		# Flipped here (not in _process) so hitboxes face the right way the instant an attack starts.
+		if attack_pivot != null:
+			attack_pivot.scale.x = value
 var coyote_timer: float = 0.0
 var jump_buffer_timer: float = 0.0
 
@@ -18,13 +23,14 @@ var wall_jump_lock_timer: float = 0.0
 var dash_charges: int = 0
 var dash_cooldown_timer: float = 0.0
 var is_dashing: bool = false
-## Read by the Hurtbox from Stage 3 on.
+## Wired to the Hurtbox in Stage 4.
 var is_invincible: bool = false
 
-var _squash: Vector2 = Vector2.ONE
-var _squash_tween: Tween
+var attack_buffer_timer: float = 0.0
+var air_attack_cooldown_timer: float = 0.0
 
-@onready var visual: Node2D = $Visual
+@onready var visual: PlayerVisual = $Visual
+@onready var attack_pivot: Node2D = $AttackPivot
 @onready var wall_check_left: RayCast2D = $WallCheckLeft
 @onready var wall_check_right: RayCast2D = $WallCheckRight
 
@@ -48,6 +54,12 @@ func _physics_process(delta: float) -> void:
 	else:
 		jump_buffer_timer = maxf(jump_buffer_timer - delta, 0.0)
 
+	if Input.is_action_just_pressed(&"attack"):
+		attack_buffer_timer = stats.attack_buffer_time
+	else:
+		attack_buffer_timer = maxf(attack_buffer_timer - delta, 0.0)
+	air_attack_cooldown_timer = maxf(air_attack_cooldown_timer - delta, 0.0)
+
 	# Not during the push-off lock, or the wall we just left would allow a second jump in mid-air.
 	if not is_on_floor() and wall_dir != 0 and wall_jump_lock_timer <= 0.0:
 		wall_coyote_timer = stats.wall_coyote_time
@@ -58,11 +70,6 @@ func _physics_process(delta: float) -> void:
 	# Not while dashing, or a dash that starts next to a wall would be free.
 	if not is_dashing and (grounded or wall_dir != 0):
 		refresh_dash()
-
-
-func _process(_delta: float) -> void:
-	# Facing is a flip of the visual only; the collision box never changes.
-	visual.scale = Vector2(_squash.x * facing, _squash.y)
 
 
 # --- Input -------------------------------------------------------------------
@@ -169,7 +176,7 @@ func wall_jump() -> void:
 
 
 func land() -> void:
-	squash(stats.land_squash)
+	visual.squash(stats.land_squash, stats.squash_return_time)
 
 
 # Consume every jump allowance so one press can never produce two jumps.
@@ -177,7 +184,7 @@ func _consume_jump() -> void:
 	coyote_timer = 0.0
 	wall_coyote_timer = 0.0
 	jump_buffer_timer = 0.0
-	squash(stats.jump_stretch)
+	visual.squash(stats.jump_stretch, stats.squash_return_time)
 
 
 # Half a step of gravity: cancels the height lost to per-frame integration (~12 px at 60 Hz),
@@ -204,13 +211,14 @@ func wants_dash() -> bool:
 	return Input.is_action_just_pressed(&"dash") and can_dash()
 
 
-# --- Visual ----------------------------------------------------------------------
+# --- Combat --------------------------------------------------------------------
 
-func squash(amount: Vector2) -> void:
-	if _squash_tween != null:
-		_squash_tween.kill()
-	_squash = amount
-	_squash_tween = create_tween()
-	_squash_tween.tween_property(self, ^"_squash", Vector2.ONE, stats.squash_return_time) \
-			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+# Air attacks have a cooldown; ground attacks are only limited by their own recovery.
+func wants_attack() -> bool:
+	return attack_buffer_timer > 0.0 and (is_on_floor() or air_attack_cooldown_timer <= 0.0)
 
+
+# Bounce off whatever a down slash hit. Not a jump: releasing the jump button doesn't cut it.
+func pogo() -> void:
+	velocity.y = -(stats.jump_velocity * stats.pogo_velocity_multiplier + _jump_step_correction())
+	refresh_dash()

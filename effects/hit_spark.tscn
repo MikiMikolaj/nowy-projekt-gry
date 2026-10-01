@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://bdu6i5mxrqa8s"]
+
+[ext_resource type="Script" uid="uid://cku5cfm1cdlwb" path="res://effects/hit_spark.gd" id="1_3pp48"]
+
+[node name="HitSpark" type="CPUParticles2D" unique_id=2143489865]
+z_index = 5
+emitting = false
+amount = 12
+lifetime = 0.22
+one_shot = true
+explosiveness = 1.0
+spread = 35.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 250.0
+initial_velocity_max = 650.0
+damping_min = 600.0
+damping_max = 900.0
+scale_amount_min = 4.0
+scale_amount_max = 9.0
+color = Color(1, 0.92, 0.6, 1)
+script = ExtResource("1_3pp48")

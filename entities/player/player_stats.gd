@@ -1,4 +1,4 @@
-# PlayerStats: every tunable movement number for the player (spec 3.1–3.4, squash & stretch from spec 5).
+# PlayerStats: every tunable number for the player (movement spec 3.1–3.4, combat spec 4.1–4.3, squash spec 5).
 class_name PlayerStats
 extends Resource
 
@@ -48,6 +48,20 @@ enum DashDirectionMode { HORIZONTAL, EIGHT_WAY }
 @export var dash_attack_cancel_time: float = 0.04
 ## Ground dash can be jump-cancelled, keeping its horizontal speed ("dash-jump").
 @export var dash_jump_enabled: bool = true
+
+@export_group("Combat")
+## Vertical input must exceed this to count as aiming an attack up or down.
+@export var attack_aim_threshold: float = 0.5
+## An attack pressed this long before it becomes possible still fires (e.g. just before a dash can be cancelled).
+@export var attack_buffer_time: float = 0.12
+## With no attack input for this long after recovery ends, the ground combo restarts from hit 1.
+@export var combo_reset_time: float = 0.15
+## Minimum time from the start of one air attack to the start of the next.
+@export var air_attack_cooldown: float = 0.22
+## Speed the player is pushed back when a side hit connects, in px/s.
+@export var side_hit_recoil: float = 120.0
+## Pogo bounce speed = jump_velocity × this.
+@export var pogo_velocity_multiplier: float = 0.85
 
 @export_group("Dash Afterimage")
 @export var afterimage_count: int = 3

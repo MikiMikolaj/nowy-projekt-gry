@@ -45,13 +45,15 @@ func physics_update(delta: float) -> void:
 		state_machine.transition_to(&"Jump")
 		return
 
-	# ┌─ STAGE 3 HOOK: attack cancel ───────────────────────────────────────────────────┐
-	# │ When the Attack state exists, cancel the dash into it here:                     │
-	# │     if _can_attack_cancel() and <attack pressed/buffered>:                      │
-	# │         state_machine.transition_to(&"Attack")                                  │
-	# │         return                                                                  │
-	# │ exit() will apply the normal speed clamp, so the attack starts at run speed.    │
-	# └─────────────────────────────────────────────────────────────────────────────────┘
+	# Attack cancel: from dash_attack_cancel_time on, a (buffered) attack press ends the dash early.
+	# exit() applies the normal speed clamp, so the attack starts at run speed.
+	if _can_attack_cancel() and player.wants_attack():
+		state_machine.transition_to(&"Attack")
+		return
+
+	# Hitstop: physics still ticks, but with a zero time step. Nothing to simulate (and no dividing by it).
+	if delta <= 0.0:
+		return
 
 	_spawn_due_afterimages()
 
@@ -106,7 +108,8 @@ func _spawn_due_afterimages() -> void:
 
 # Leaves a fading copy of the placeholder visual behind in the world.
 func _spawn_afterimage() -> void:
-	var ghost: Node2D = player.visual.duplicate() as Node2D
+	# Flags 0: copy the shapes only, not the PlayerVisual script (the ghost must not follow the player).
+	var ghost: Node2D = player.visual.duplicate(0) as Node2D
 	var level: Node2D = player.get_parent() as Node2D
 	# Position it BEFORE it enters the tree. Added first, it would exist for a moment at the level's
 	# origin, and physics interpolation would draw it sliding from there to the dash path.

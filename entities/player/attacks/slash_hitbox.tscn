@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://4ukjlppmxja7"]
+
+[ext_resource type="Script" uid="uid://dp50nw6fpe7xv" path="res://core/combat/hitbox.gd" id="1_ilghf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ilghf"]
+size = Vector2(90, 80)
+
+[node name="SlashHitbox" type="Area2D" unique_id=2091785015]
+collision_layer = 32
+collision_mask = 80
+script = ExtResource("1_ilghf")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=705146595]
+shape = SubResource("RectangleShape2D_ilghf")
+
+[node name="Slash" type="Polygon2D" parent="." unique_id=1083238877]
+z_index = 4
+color = Color(1, 1, 1, 0.9)
+polygon = PackedVector2Array(-45, -40, 10, -34, 36, -16, 45, 0, 36, 16, 10, 34, -45, 40, 0, 22, 16, 0, 0, -22)
