@@ -107,8 +107,12 @@ func _spawn_due_afterimages() -> void:
 # Leaves a fading copy of the placeholder visual behind in the world.
 func _spawn_afterimage() -> void:
 	var ghost: Node2D = player.visual.duplicate() as Node2D
-	player.get_parent().add_child(ghost)
-	ghost.global_transform = player.visual.global_transform
+	var level: Node2D = player.get_parent() as Node2D
+	# Position it BEFORE it enters the tree. Added first, it would exist for a moment at the level's
+	# origin, and physics interpolation would draw it sliding from there to the dash path.
+	ghost.transform = level.global_transform.affine_inverse() * player.visual.global_transform
+	level.add_child(ghost)
+	ghost.reset_physics_interpolation()
 	ghost.z_index = -1
 	ghost.modulate.a = player.stats.afterimage_alpha
 	var tween: Tween = ghost.create_tween()
