@@ -49,6 +49,10 @@ func _physics_process(delta: float) -> void:
 
 
 func enter() -> void:
+	# Spec 4.1: down + attack in the air is the ground slam, which is its own state.
+	if _should_slam():
+		state_machine.transition_to(&"Slam")
+		return
 	_start_attack()
 
 
@@ -111,21 +115,16 @@ func _start_attack() -> void:
 	_set_phase(Phase.STARTUP)
 
 
+func _should_slam() -> bool:
+	var aim_y: float = Input.get_axis(&"move_up", &"move_down")
+	return not player.is_on_floor() and aim_y > player.stats.attack_aim_threshold
+
+
 # Spec 4.1 table: on the ground every direction is a combo hit (the wide arc already covers overhead);
-# in the air, up or neutral is the side slash and down is the slam.
+# in the air, up or neutral is the side slash (down never gets here: it went to the Slam state).
 func _choose_attack() -> AttackData:
 	if not _is_ground_attack:
 		_combo_step = 0
-		var aim_y: float = Input.get_axis(&"move_up", &"move_down")
-		if aim_y > player.stats.attack_aim_threshold:
-			# ┌─ SLAM HOOK ──────────────────────────────────────────────────────────────────────┐
-			# │ Down + attack in the air is the ground slam (spec 4.3b), built in the next step. │
-			# │ It will be its own state: Fall/Jump/etc. route here, and this becomes            │
-			# │     state_machine.transition_to(&"Slam")                                         │
-			# │ Until then it falls through to the air side slash so the button still does       │
-			# │ something.                                                                       │
-			# └──────────────────────────────────────────────────────────────────────────────────┘
-			pass
 		return air_side_attack
 	var data: AttackData = combo_attacks[_combo_step]
 	_combo_step = (_combo_step + 1) % combo_attacks.size()
@@ -175,6 +174,9 @@ func _move(delta: float) -> void:
 
 func _finish() -> void:
 	if _next_queued:
+		if _should_slam():
+			state_machine.transition_to(&"Slam")
+			return
 		if player.is_on_floor() or player.air_attack_cooldown_timer <= 0.0:
 			_start_attack()
 			return

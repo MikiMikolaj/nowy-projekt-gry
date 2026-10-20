@@ -15,8 +15,10 @@ extends Resource
 @export_group("Movement and impact")
 ## Forward distance the attacker moves during a ground attack, in px.
 @export var lunge: float = 0.0
-## Speed applied to the target away from the attacker, in px/s.
+## Horizontal speed applied to the target, away from the attacker's position, in px/s.
 @export var knockback: float = 0.0
+## Upward speed applied to the target, in px/s (0 = purely sideways).
+@export var knockback_lift: float = 0.0
 @export var hitstop: float = 0.045
 ## Camera trauma added on hit (0..1).
 @export_range(0.0, 1.0) var shake: float = 0.12
@@ -35,6 +37,13 @@ extends Resource
 
 func total_duration() -> float:
 	return startup + active + recovery
+
+
+## Knockback for a target at target_pos hit by an attacker at attacker_pos: always away from the attacker's
+## position (not the attacker's facing), so a hit landing behind or below still pushes outward.
+func knockback_velocity(attacker_pos: Vector2, target_pos: Vector2) -> Vector2:
+	var away: float = 1.0 if target_pos.x >= attacker_pos.x else -1.0
+	return Vector2(away * knockback, -knockback_lift)
 
 
 ## 1 for a high→low sweep, -1 for low→high.

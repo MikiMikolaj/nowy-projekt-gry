@@ -61,6 +61,18 @@ enum DashDirectionMode { HORIZONTAL, EIGHT_WAY }
 ## Speed the player is pushed back when a side hit connects, in px/s.
 @export var side_hit_recoil: float = 120.0
 
+@export_group("Slam")
+## Plunge speed, straight down, in px/s. (Wind-up time is slam_plunge.tres startup; landing recovery is
+## slam_impact.tres recovery; impact hitbox time is slam_impact.tres active.)
+@export var slam_plunge_speed: float = 1800.0
+## Landing recovery can only be dash-cancelled after this many seconds.
+@export var slam_dash_cancel_time: float = 0.12
+## Sword angle while winding up (raised overhead) and while plunging (pointing down), in degrees.
+@export var slam_sword_raised_degrees: float = -90.0
+@export var slam_sword_plunge_degrees: float = 90.0
+## How fast the sword flips from overhead to pointing down when the plunge starts.
+@export var slam_sword_turn_time: float = 0.05
+
 @export_group("Sword")
 ## Resting sword angle in degrees (0 = ahead, 90 = straight down, 180 = straight back): down and back,
 ## shallow enough that the 150 px blade stays above the floor.

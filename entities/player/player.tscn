@@ -12,8 +12,10 @@
 [ext_resource type="Script" uid="uid://dnt45b4jt1vxb" path="res://entities/player/states/attack.gd" id="10_j3ovn"]
 [ext_resource type="Script" uid="uid://cdexfwkwy45l" path="res://core/combat/hurtbox.gd" id="10_wvtmh"]
 [ext_resource type="Script" uid="uid://dvpsy4g3q2x0s" path="res://core/combat/health_component.gd" id="11_7thud"]
+[ext_resource type="Script" uid="uid://cy0qdqjjkqpis" path="res://entities/player/states/slam.gd" id="11_yqrof"]
 [ext_resource type="PackedScene" uid="uid://6p1ub6lg4qyi" path="res://entities/player/sword.tscn" id="13_j3ovn"]
 [ext_resource type="PackedScene" uid="uid://bcvugqmq66ibb" path="res://entities/player/attacks/swing_hitbox.tscn" id="14_afbqv"]
+[ext_resource type="Script" uid="uid://xt4pgy234id0" path="res://core/combat/rect_hitbox.gd" id="15_gx6sm"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8fjmc"]
 size = Vector2(44, 96)
@@ -71,6 +73,9 @@ script = ExtResource("8_26q78")
 [node name="Attack" type="Node" parent="StateMachine" unique_id=1484642717]
 script = ExtResource("10_j3ovn")
 
+[node name="Slam" type="Node" parent="StateMachine" unique_id=2009193730]
+script = ExtResource("11_yqrof")
+
 [node name="WallCheckLeft" type="RayCast2D" parent="." unique_id=1798843103]
 target_position = Vector2(-26, 0)
 
@@ -97,3 +102,17 @@ position = Vector2(0, -20)
 
 [node name="SwingHitbox" parent="AttackPivot" unique_id=392512704 instance=ExtResource("14_afbqv")]
 position = Vector2(0, -20)
+
+[node name="SlamPlungeHitbox" type="Area2D" parent="." unique_id=170922439]
+position = Vector2(0, 40)
+collision_layer = 32
+collision_mask = 16
+script = ExtResource("15_gx6sm")
+size = Vector2(60, 48)
+
+[node name="SlamImpactHitbox" type="Area2D" parent="." unique_id=944768267]
+position = Vector2(0, 8)
+collision_layer = 32
+collision_mask = 16
+script = ExtResource("15_gx6sm")
+size = Vector2(360, 80)
