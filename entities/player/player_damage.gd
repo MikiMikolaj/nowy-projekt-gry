@@ -42,7 +42,9 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	invincibility_timer = maxf(invincibility_timer - delta, 0.0)
-	_teleport_grace = maxi(_teleport_grace - 1, 0)
+	# Counted in real physics steps only: during hitstop the engine still ticks, with a zero time step.
+	if delta > 0.0:
+		_teleport_grace = maxi(_teleport_grace - 1, 0)
 	_sync_invincibility()
 	if _player.is_on_floor() and not _health.is_dead() and _has_floor_under_center() and not _is_near_hazard():
 		safe_position = _player.global_position

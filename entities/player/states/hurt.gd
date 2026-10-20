@@ -20,9 +20,12 @@ func physics_update(delta: float) -> void:
 	if delta <= 0.0:
 		return
 	_time += delta
+	var was_on_floor: bool = player.is_on_floor()
 	player.apply_gravity(delta)
 	player.velocity.x = move_toward(player.velocity.x, 0.0, player.stats.air_decel * delta)
 	player.move_and_slide()
+	if not was_on_floor and player.is_on_floor():
+		player.land()
 	if _time < player.stats.hurt_stun_time:
 		return
 	if not player.is_on_floor():

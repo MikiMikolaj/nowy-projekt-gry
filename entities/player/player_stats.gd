@@ -66,6 +66,20 @@ enum DashDirectionMode { HORIZONTAL, EIGHT_WAY }
 ## Frozen this long after dying before respawning.
 @export var death_freeze_time: float = 0.4
 
+@export_group("Perfect Dodge")
+## Spec 4.5.2 toggle: an enemy attack touching you during dash i-frames slows time and empowers your next attack.
+@export var perfect_dodge_enabled: bool = true
+@export_range(0.0, 1.0) var perfect_dodge_slow_mo_scale: float = 0.3
+## Slow-mo length in real seconds.
+@export var perfect_dodge_slow_mo_time: float = 0.25
+## The next attack started within this window gets the bonus.
+@export var perfect_dodge_empower_time: float = 1.0
+@export var perfect_dodge_bonus_damage: int = 1
+@export var perfect_dodge_flash_color: Color = Color(0.3, 1.0, 1.0)
+@export var perfect_dodge_flash_time: float = 0.15
+## How fast the empowered glow pulses (radians per real second).
+@export var perfect_dodge_glow_pulse_speed: float = 14.0
+
 @export_group("Combat")
 ## Vertical input must exceed this to count as aiming an attack up or down.
 @export var attack_aim_threshold: float = 0.5

@@ -10,6 +10,9 @@ enum Phase { WINDUP, PLUNGE, RECOVERY }
 @export var impact_attack: AttackData = preload("res://entities/player/attacks/slam_impact.tres")
 
 var _phase: Phase = Phase.WINDUP
+# This slam's data: the exported resources, or boosted copies after a perfect dodge.
+var _plunge_data: AttackData
+var _impact_data: AttackData
 var _phase_time: float = 0.0
 var _dash_queued: bool = false
 var _plunge_hitbox: Hitbox
@@ -24,10 +27,8 @@ func _ready() -> void:
 	_plunge_hitbox = player.get_node(^"SlamPlungeHitbox") as Hitbox
 	_impact_hitbox = player.get_node(^"SlamImpactHitbox") as Hitbox
 	_sword = player.get_node(^"AttackPivot/Sword") as PlayerSword
-	_plunge_hitbox.attack_data = plunge_attack
-	_impact_hitbox.attack_data = impact_attack
-	_plunge_hitbox.hit_landed.connect(_on_hit_landed.bind(plunge_attack))
-	_impact_hitbox.hit_landed.connect(_on_hit_landed.bind(impact_attack))
+	_plunge_hitbox.hit_landed.connect(_on_hit_landed.bind(false))
+	_impact_hitbox.hit_landed.connect(_on_hit_landed.bind(true))
 	var body: RectangleShape2D = (player.get_node(^"CollisionShape2D") as CollisionShape2D).shape as RectangleShape2D
 	_feet_y = body.size.y * 0.5
 
@@ -36,6 +37,14 @@ func enter() -> void:
 	player.attack_buffer_timer = 0.0
 	player.velocity = Vector2.ZERO
 	_dash_queued = false
+	# A perfect-dodge empowerment is used up by the whole slam: both its hits get the bonus.
+	var dodge: PerfectDodge = player.perfect_dodge
+	var empowered: bool = dodge.is_empowered()
+	dodge.consume_empower(plunge_attack)
+	_plunge_data = dodge.boosted(plunge_attack) if empowered else plunge_attack
+	_impact_data = dodge.boosted(impact_attack) if empowered else impact_attack
+	_plunge_hitbox.attack_data = _plunge_data
+	_impact_hitbox.attack_data = _impact_data
 	_set_phase(Phase.WINDUP)
 
 
@@ -84,7 +93,7 @@ func _impact() -> void:
 	_impact_hitbox.enable()
 	player.land()
 	# Always, hit or miss: the slam must feel heavy even into empty floor.
-	Events.camera_shake_requested.emit(impact_attack.shake)
+	Events.camera_shake_requested.emit(_impact_data.shake)
 	SlamDust.spawn(player.get_parent() as Node2D, player.global_position + Vector2(0.0, _feet_y))
 	_set_phase(Phase.RECOVERY)
 
@@ -105,14 +114,15 @@ func _update_recovery(delta: float) -> void:
 		state_machine.transition_to(&"Run" if player.get_input_x() != 0.0 else &"Idle")
 
 
-func _on_hit_landed(hurtbox: Hurtbox, data: AttackData) -> void:
+func _on_hit_landed(hurtbox: Hurtbox, is_impact: bool) -> void:
+	var data: AttackData = _impact_data if is_impact else _plunge_data
 	# A connected slam refreshes the dash, like any hit.
 	player.refresh_dash()
 	GameFeel.hitstop(data.hitstop)
-	if data != impact_attack:
+	if not is_impact:
 		# The impact already shook the camera on landing; only the plunge adds its own shake.
 		Events.camera_shake_requested.emit(data.shake)
 	var spark_direction: Vector2 = Vector2.DOWN
-	if data == impact_attack:
+	if is_impact:
 		spark_direction = data.knockback_velocity(player, hurtbox.global_position).normalized()
 	HitSpark.spawn(player.get_parent() as Node2D, hurtbox.global_position, spark_direction)

@@ -106,7 +106,7 @@ func _start_attack() -> void:
 	# Facing may change between hits, but is locked for the duration of one.
 	player.update_facing()
 	_is_ground_attack = player.is_on_floor()
-	_data = _choose_attack()
+	_data = player.perfect_dodge.consume_empower(_choose_attack())
 	_lunge_remaining = _data.lunge if _is_ground_attack else 0.0
 	if not _is_ground_attack:
 		player.air_attack_cooldown_timer = player.stats.air_attack_cooldown

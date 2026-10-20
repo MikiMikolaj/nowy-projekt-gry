@@ -20,6 +20,7 @@
 [ext_resource type="Script" uid="uid://xt4pgy234id0" path="res://core/combat/rect_hitbox.gd" id="15_gx6sm"]
 [ext_resource type="Script" uid="uid://d22jdqfa6vocd" path="res://entities/player/player_damage.gd" id="17_3wlsy"]
 [ext_resource type="Script" uid="uid://bhlcdbh1m0nqt" path="res://core/utils/rect_shape.gd" id="18_b2kln"]
+[ext_resource type="Script" uid="uid://cfs2nmwgb3ph1" path="res://entities/player/perfect_dodge.gd" id="21_eyb6c"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8fjmc"]
 size = Vector2(44, 96)
@@ -53,6 +54,16 @@ offset_right = 18.0
 offset_bottom = -72.0
 mouse_filter = 2
 color = Color(0.08, 0.1, 0.16, 1)
+
+[node name="EmpowerGlow" type="ColorRect" parent="Visual" unique_id=111348380]
+visible = false
+z_index = -1
+offset_left = -28.0
+offset_top = -102.0
+offset_right = 28.0
+offset_bottom = 6.0
+mouse_filter = 2
+color = Color(0.35, 1, 1, 0.6)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2007957517]
 shape = SubResource("RectangleShape2D_8fjmc")
@@ -144,3 +155,6 @@ monitorable = false
 shape = SubResource("RectangleShape2D_we0b7")
 script = ExtResource("18_b2kln")
 size = Vector2(172, 176)
+
+[node name="PerfectDodge" type="Node" parent="." unique_id=121049605]
+script = ExtResource("21_eyb6c")

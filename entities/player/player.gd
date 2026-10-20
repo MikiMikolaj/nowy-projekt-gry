@@ -29,6 +29,7 @@ var air_attack_cooldown_timer: float = 0.0
 
 @onready var visual: PlayerVisual = $Visual
 @onready var damage: PlayerDamage = $Damage
+@onready var perfect_dodge: PerfectDodge = $PerfectDodge
 @onready var attack_pivot: Node2D = $AttackPivot
 @onready var wall_check_left: RayCast2D = $WallCheckLeft
 @onready var wall_check_right: RayCast2D = $WallCheckRight
