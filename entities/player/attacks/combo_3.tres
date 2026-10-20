@@ -5,10 +5,14 @@
 [resource]
 script = ExtResource("1_i3305")
 damage = 2
-startup = 0.05
-active = 0.09
-recovery = 0.18
-lunge = 100.0
-knockback = 520.0
-hitstop = 0.06
-shake = 0.22
+startup = 0.08
+active = 0.1
+recovery = 0.22
+lunge = 110.0
+knockback = 600.0
+hitstop = 0.08
+shake = 0.3
+swing_from_degrees = -135.0
+windup_degrees = 30.0
+reach = 210.0
+arc_height = 154.0

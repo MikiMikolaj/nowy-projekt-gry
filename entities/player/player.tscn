@@ -12,7 +12,8 @@
 [ext_resource type="Script" uid="uid://dnt45b4jt1vxb" path="res://entities/player/states/attack.gd" id="10_j3ovn"]
 [ext_resource type="Script" uid="uid://cdexfwkwy45l" path="res://core/combat/hurtbox.gd" id="10_wvtmh"]
 [ext_resource type="Script" uid="uid://dvpsy4g3q2x0s" path="res://core/combat/health_component.gd" id="11_7thud"]
-[ext_resource type="PackedScene" uid="uid://4ukjlppmxja7" path="res://entities/player/attacks/slash_hitbox.tscn" id="12_a1qjk"]
+[ext_resource type="PackedScene" uid="uid://6p1ub6lg4qyi" path="res://entities/player/sword.tscn" id="13_j3ovn"]
+[ext_resource type="PackedScene" uid="uid://bcvugqmq66ibb" path="res://entities/player/attacks/swing_hitbox.tscn" id="14_afbqv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8fjmc"]
 size = Vector2(44, 96)
@@ -89,14 +90,10 @@ script = ExtResource("11_7thud")
 max_hp = 5.0
 
 [node name="AttackPivot" type="Node2D" parent="." unique_id=915871532]
+physics_interpolation_mode = 2
 
-[node name="HitboxSide" parent="AttackPivot" unique_id=2091785015 instance=ExtResource("12_a1qjk")]
-position = Vector2(67, 0)
+[node name="Sword" parent="AttackPivot" unique_id=1371096681 instance=ExtResource("13_j3ovn")]
+position = Vector2(0, -20)
 
-[node name="HitboxUp" parent="AttackPivot" unique_id=1826472872 instance=ExtResource("12_a1qjk")]
-position = Vector2(0, -93)
-rotation = -1.5707963
-
-[node name="HitboxDown" parent="AttackPivot" unique_id=1900295423 instance=ExtResource("12_a1qjk")]
-position = Vector2(0, 93)
-rotation = 1.5707963
+[node name="SwingHitbox" parent="AttackPivot" unique_id=392512704 instance=ExtResource("14_afbqv")]
+position = Vector2(0, -20)

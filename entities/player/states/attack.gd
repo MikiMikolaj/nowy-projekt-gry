@@ -1,4 +1,5 @@
-# Attack: one state for every attack. Picks an AttackData, then runs startup → active → recovery from its timings.
+# Attack: one state for every sword swing. Picks an AttackData, then runs wind-up (startup) → sweep (active)
+# → follow-through (recovery) from its timings, driving the sword, the crescent hitbox and the trail.
 extends PlayerState
 
 enum Phase { STARTUP, ACTIVE, RECOVERY }
@@ -9,11 +10,8 @@ enum Phase { STARTUP, ACTIVE, RECOVERY }
 	preload("res://entities/player/attacks/combo_3.tres"),
 ]
 @export var air_side_attack: AttackData = preload("res://entities/player/attacks/air_side.tres")
-@export var up_attack: AttackData = preload("res://entities/player/attacks/up.tres")
-@export var down_attack: AttackData = preload("res://entities/player/attacks/down.tres")
 
 var _data: AttackData
-var _hitbox: Hitbox
 var _phase: Phase = Phase.STARTUP
 var _phase_time: float = 0.0
 # Index of the next ground combo hit, and the countdown until it falls back to hit 1.
@@ -24,19 +22,21 @@ var _lunge_remaining: float = 0.0
 var _next_queued: bool = false
 var _dash_queued: bool = false
 var _has_recoiled: bool = false
-var _has_pogoed: bool = false
-var _hitboxes: Dictionary[AttackData.Direction, Hitbox] = {}
+
+var _hitbox: SwingHitbox
+var _sword: PlayerSword
+# The player's feet relative to the swing hitbox: the crescent covers down to here, never into the floor.
+var _feet_y: float = 0.0
 
 
 func _ready() -> void:
 	super()
-	_hitboxes[AttackData.Direction.FORWARD] = player.get_node(^"AttackPivot/HitboxSide")
-	_hitboxes[AttackData.Direction.UP] = player.get_node(^"AttackPivot/HitboxUp")
-	_hitboxes[AttackData.Direction.DOWN] = player.get_node(^"AttackPivot/HitboxDown")
-	for hitbox: Hitbox in _hitboxes.values():
-		hitbox.hit_landed.connect(_on_hit_landed)
-		hitbox.hazard_hit.connect(_on_hazard_hit)
-		_set_slash_visible(hitbox, false)
+	# Looked up here, not with @onready: `player` is only set by super() above.
+	_hitbox = player.get_node(^"AttackPivot/SwingHitbox") as SwingHitbox
+	_sword = player.get_node(^"AttackPivot/Sword") as PlayerSword
+	var body: RectangleShape2D = (player.get_node(^"CollisionShape2D") as CollisionShape2D).shape as RectangleShape2D
+	_feet_y = body.size.y * 0.5 - _hitbox.position.y
+	_hitbox.hit_landed.connect(_on_hit_landed)
 
 
 # Runs even when another state is active: the combo memory must expire while the player runs around.
@@ -54,7 +54,9 @@ func enter() -> void:
 
 func exit() -> void:
 	_hitbox.disable()
-	_set_slash_visible(_hitbox, false)
+	_hitbox.fade_trail(player.stats.trail_fade_time)
+	# A cancel can leave the sword mid-swing; a finished swing is already at rest, so this is a no-op then.
+	_sword.settle(player.stats.sword_rest_degrees, player.stats.sword_settle_time)
 	_combo_reset_timer = player.stats.combo_reset_time
 
 
@@ -97,7 +99,6 @@ func _start_attack() -> void:
 	_next_queued = false
 	_dash_queued = false
 	_has_recoiled = false
-	_has_pogoed = false
 	# Facing may change between hits, but is locked for the duration of one.
 	player.update_facing()
 	_is_ground_attack = player.is_on_floor()
@@ -105,21 +106,27 @@ func _start_attack() -> void:
 	_lunge_remaining = _data.lunge if _is_ground_attack else 0.0
 	if not _is_ground_attack:
 		player.air_attack_cooldown_timer = player.stats.air_attack_cooldown
-	_hitbox = _hitboxes[_data.direction]
 	_hitbox.attack_data = _data
+	_hitbox.set_arc(_data, player.stats, _feet_y)
 	_set_phase(Phase.STARTUP)
 
 
-# Spec 4.1 table. Anything that isn't a ground combo hit also restarts the combo.
+# Spec 4.1 table: on the ground every direction is a combo hit (the wide arc already covers overhead);
+# in the air, up or neutral is the side slash and down is the slam.
 func _choose_attack() -> AttackData:
-	var aim_y: float = Input.get_axis(&"move_up", &"move_down")
-	var threshold: float = player.stats.attack_aim_threshold
-	if aim_y < -threshold:
-		_combo_step = 0
-		return up_attack
 	if not _is_ground_attack:
 		_combo_step = 0
-		return down_attack if aim_y > threshold else air_side_attack
+		var aim_y: float = Input.get_axis(&"move_up", &"move_down")
+		if aim_y > player.stats.attack_aim_threshold:
+			# ┌─ SLAM HOOK ──────────────────────────────────────────────────────────────────────┐
+			# │ Down + attack in the air is the ground slam (spec 4.3b), built in the next step. │
+			# │ It will be its own state: Fall/Jump/etc. route here, and this becomes            │
+			# │     state_machine.transition_to(&"Slam")                                         │
+			# │ Until then it falls through to the air side slash so the button still does       │
+			# │ something.                                                                       │
+			# └──────────────────────────────────────────────────────────────────────────────────┘
+			pass
+		return air_side_attack
 	var data: AttackData = combo_attacks[_combo_step]
 	_combo_step = (_combo_step + 1) % combo_attacks.size()
 	return data
@@ -128,12 +135,17 @@ func _choose_attack() -> AttackData:
 func _set_phase(phase: Phase) -> void:
 	_phase = phase
 	_phase_time = 0.0
-	if phase == Phase.ACTIVE:
-		_hitbox.enable()
-		_set_slash_visible(_hitbox, true)
-	elif phase == Phase.RECOVERY:
-		_hitbox.disable()
-		_set_slash_visible(_hitbox, false)
+	match phase:
+		Phase.STARTUP:
+			_sword.wind_up(_data.windup_angle(), _data.startup)
+		Phase.ACTIVE:
+			_hitbox.enable()
+			_hitbox.show_trail(player.stats.trail_alpha)
+			_sword.sweep(_data.swing_to_degrees - _data.windup_angle(), _data.active)
+		Phase.RECOVERY:
+			_hitbox.disable()
+			_hitbox.fade_trail(player.stats.trail_fade_time)
+			_sword.settle(player.stats.sword_rest_degrees, _data.recovery)
 
 
 func _move(delta: float) -> void:
@@ -176,43 +188,14 @@ func _finish() -> void:
 		state_machine.transition_to(&"Idle")
 
 
-# --- Hit reactions ---------------------------------------------------------------
-
-func _on_hit_landed(_hurtbox: Hurtbox) -> void:
-	# Spec 4.5.1: any attack that connects gives the dash back.
+func _on_hit_landed(hurtbox: Hurtbox) -> void:
+	# Spec 3.4 / 4.5.1: any attack that connects gives the dash back.
 	player.refresh_dash()
-	_react_to_hit()
-
-
-func _on_hazard_hit(_hazard: Hitbox) -> void:
-	# Hazards (spikes, enemy contact hitboxes) can't be damaged; they only matter as something to pogo off.
-	if _data.direction == AttackData.Direction.DOWN:
-		_react_to_hit()
-
-
-func _react_to_hit() -> void:
 	GameFeel.hitstop(_data.hitstop)
 	Events.camera_shake_requested.emit(_data.shake)
-	HitSpark.spawn(player.get_parent() as Node2D, _hitbox.global_position, _attack_vector())
-	match _data.direction:
-		AttackData.Direction.FORWARD:
-			if not _has_recoiled:
-				_has_recoiled = true
-				player.velocity.x = -player.facing * player.stats.side_hit_recoil
-		AttackData.Direction.DOWN:
-			if not _has_pogoed:
-				_has_pogoed = true
-				player.pogo()
-
-
-func _attack_vector() -> Vector2:
-	match _data.direction:
-		AttackData.Direction.UP:
-			return Vector2.UP
-		AttackData.Direction.DOWN:
-			return Vector2.DOWN
-	return Vector2(player.facing, 0.0)
-
-
-func _set_slash_visible(hitbox: Hitbox, is_visible: bool) -> void:
-	(hitbox.get_node(^"Slash") as CanvasItem).visible = is_visible
+	# Sparks fly along the blade's path: forward, and down or up depending on the sweep.
+	var spark_direction: Vector2 = Vector2(player.facing, 0.6 * _data.sweep_sign()).normalized()
+	HitSpark.spawn(player.get_parent() as Node2D, hurtbox.global_position, spark_direction)
+	if not _has_recoiled:
+		_has_recoiled = true
+		player.velocity.x = -player.facing * player.stats.side_hit_recoil

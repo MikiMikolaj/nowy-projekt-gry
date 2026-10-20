@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://6p1ub6lg4qyi"]
+
+[ext_resource type="Script" uid="uid://cmbhuiuxgwqoi" path="res://entities/player/player_sword.gd" id="1_sksr3"]
+
+[node name="Sword" type="Node2D" unique_id=1371096681]
+script = ExtResource("1_sksr3")
+
+[node name="Blade" type="ColorRect" parent="." unique_id=1096030925]
+offset_left = -8.0
+offset_top = -9.0
+offset_right = 142.0
+offset_bottom = 9.0
+mouse_filter = 2
+color = Color(0.8, 0.84, 0.9, 1)

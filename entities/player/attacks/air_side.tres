@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_qal2n")
-startup = 0.02
-active = 0.08
-knockback = 280.0
+startup = 0.03
+active = 0.09
+knockback = 340.0

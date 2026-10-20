@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bcvugqmq66ibb"]
+
+[ext_resource type="Script" uid="uid://rcg4blm7v4n" path="res://entities/player/attacks/swing_hitbox.gd" id="1_csdhf"]
+
+[node name="SwingHitbox" type="Area2D" unique_id=392512704]
+collision_layer = 32
+collision_mask = 16
+script = ExtResource("1_csdhf")
+
+[node name="Shape" type="CollisionPolygon2D" parent="." unique_id=36131199]
+
+[node name="Trail" type="Polygon2D" parent="." unique_id=882448283]
+z_index = 4

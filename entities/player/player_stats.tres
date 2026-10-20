@@ -14,3 +14,4 @@ time_to_apex = 0.3
 fall_gravity_multiplier = 2.0
 max_fall_speed = 1500.0
 wall_jump_velocity_x = 580.0
+air_attack_cooldown = 0.25

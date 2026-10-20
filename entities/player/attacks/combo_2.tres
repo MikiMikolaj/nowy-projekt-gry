@@ -5,4 +5,6 @@
 [resource]
 script = ExtResource("1_pmmwr")
 lunge = 70.0
-knockback = 280.0
+knockback = 340.0
+swing_from_degrees = 75.0
+swing_to_degrees = -100.0

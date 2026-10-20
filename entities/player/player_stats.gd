@@ -1,4 +1,4 @@
-# PlayerStats: every tunable number for the player (movement spec 3.1–3.4, combat spec 4.1–4.3, squash spec 5).
+# PlayerStats: every tunable number for the player (movement spec 3.1–3.4, combat spec 4.1–4.2, squash spec 5).
 class_name PlayerStats
 extends Resource
 
@@ -60,8 +60,20 @@ enum DashDirectionMode { HORIZONTAL, EIGHT_WAY }
 @export var air_attack_cooldown: float = 0.22
 ## Speed the player is pushed back when a side hit connects, in px/s.
 @export var side_hit_recoil: float = 120.0
-## Pogo bounce speed = jump_velocity × this.
-@export var pogo_velocity_multiplier: float = 0.85
+
+@export_group("Sword")
+## Resting sword angle in degrees (0 = ahead, 90 = straight down, 180 = straight back): down and back,
+## shallow enough that the 150 px blade stays above the floor.
+@export var sword_rest_degrees: float = 155.0
+## How fast the sword returns to rest when an attack is cancelled.
+@export var sword_settle_time: float = 0.1
+## Slash trail: opacity while the hitbox is on, then fade-out time once it turns off.
+@export_range(0.0, 1.0) var trail_alpha: float = 0.85
+@export var trail_fade_time: float = 0.1
+## Crescent shape: inner edge size relative to the outer edge (thicker crescent = smaller), and how much
+## shorter the inner edge is at each end (makes the pointed tips), in degrees.
+@export_range(0.0, 0.9) var crescent_inner_ratio: float = 0.25
+@export var crescent_taper_degrees: float = 15.0
 
 @export_group("Dash Afterimage")
 @export var afterimage_count: int = 3

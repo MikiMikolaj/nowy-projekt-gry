@@ -5,4 +5,4 @@
 [resource]
 script = ExtResource("1_6r6up")
 lunge = 70.0
-knockback = 280.0
+knockback = 340.0

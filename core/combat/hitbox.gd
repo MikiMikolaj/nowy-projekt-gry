@@ -1,13 +1,11 @@
-# Hitbox: an Area2D that hits any Hurtbox it overlaps while enabled. Also reports touching other Hitboxes (hazards).
+# Hitbox: an Area2D that hits any Hurtbox it overlaps while enabled, once per target per enable().
 class_name Hitbox
 extends Area2D
 
 ## Emitted when this hitbox damages a hurtbox, so the attacker can react (dash refresh, recoil, hitstop).
 signal hit_landed(hurtbox: Hurtbox)
-## Emitted when this hitbox touches another Hitbox (spikes, enemy contact damage). Used for the pogo.
-signal hazard_hit(hazard: Hitbox)
 
-## What this hit does. Leave empty for a hitbox that can be touched (pogo) but deals no damage.
+## What this hit does. Leave empty for a hitbox that deals no damage yet.
 @export var attack_data: AttackData
 ## The entity that owns this attack (used for knockback direction and damage source).
 ## Falls back to the scene owner when left empty.
@@ -43,12 +41,9 @@ func disable() -> void:
 
 
 func _on_area_entered(area: Area2D) -> void:
-	if area in _hit_targets:
+	var hurtbox: Hurtbox = area as Hurtbox
+	if hurtbox == null or attack_data == null or hurtbox in _hit_targets:
 		return
-	if area is Hurtbox:
-		if attack_data != null and (area as Hurtbox).receive_hit(self):
-			_hit_targets.append(area)
-			hit_landed.emit(area as Hurtbox)
-	elif area is Hitbox:
-		_hit_targets.append(area)
-		hazard_hit.emit(area as Hitbox)
+	if hurtbox.receive_hit(self):
+		_hit_targets.append(hurtbox)
+		hit_landed.emit(hurtbox)

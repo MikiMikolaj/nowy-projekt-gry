@@ -195,7 +195,7 @@ func _jump_step_correction() -> float:
 
 # --- Dash ----------------------------------------------------------------------
 
-# The one place dash charges come back. Later stages also call this on a landed hit and on a pogo.
+# The one place dash charges come back: landing, touching a wall, and any attack that connects.
 func refresh_dash() -> void:
 	dash_charges = stats.air_dash_charges
 
@@ -216,9 +216,3 @@ func wants_dash() -> bool:
 # Air attacks have a cooldown; ground attacks are only limited by their own recovery.
 func wants_attack() -> bool:
 	return attack_buffer_timer > 0.0 and (is_on_floor() or air_attack_cooldown_timer <= 0.0)
-
-
-# Bounce off whatever a down slash hit. Not a jump: releasing the jump button doesn't cut it.
-func pogo() -> void:
-	velocity.y = -(stats.jump_velocity * stats.pogo_velocity_multiplier + _jump_step_correction())
-	refresh_dash()
