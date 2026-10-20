@@ -79,7 +79,7 @@ res://
 | 6 | player_attack | Player Hitboxes |
 | 7 | enemy_attack | Enemy contact Hitboxes, hazards (spikes) |
 
-- Player hitboxes are on layer 6 and mask layer 5 (plus 7 for pogo on hazards).
+- Player hitboxes are on layer 6 and mask layer 5 only (there is no pogo, so they ignore hazards).
 - Enemy/hazard hitboxes are on layer 7 and mask layer 4.
 - Bodies mask `world` only. Player and enemies pass through each other; damage is handled by areas.
 

@@ -1,4 +1,4 @@
-# Prototype Design Spec — Combat Playground v0.1
+# Prototype Design Spec — Combat Playground v0.2
 
 > Source of truth for the prototype. Every number here is a **starting value**. All of them live in `.tres` resources so you can tune them in the Inspector. Expect to change most of them after playtesting; that is the point of the prototype.
 
@@ -6,8 +6,8 @@
 
 1. **Responsive first.** The player never fights the controls. Input forgiveness (coyote time, buffering) is invisible but always there.
 2. **Low commitment, high tempo.** Attacks are fast and commit you only briefly (Dead Cells pace). Dash and jump are escape hatches, and the dash can be cancelled into an attack.
-3. **Aggression is rewarded.** Landing hits keeps you mobile: a hit refreshes the dash and a pogo refreshes the jump. Playing safe is allowed but slower.
-4. **Every hit is felt.** Hitstop, knockback, shake, flash and particles fire on every successful hit, scaled by how important the hit is.
+3. **Aggression is rewarded.** Landing hits keeps you mobile: a hit refreshes the dash. Playing safe is allowed but slower.
+4. **Nimble hero, heavy sword.** The character moves light and fast; the sword carries the weight. Power comes from wide arcs, big knockback, hitstop, shake and particles, not from slow controls. Every hit is felt, scaled by how important it is.
 5. **Readable over flashy.** Enemies telegraph, and hitboxes match what you see.
 
 **Prototype goal:** answer one question, *"Is it fun to move and fight in an empty room for 10 minutes?"*
@@ -42,11 +42,11 @@ Attack direction uses a stricter threshold: vertical input counts as "aiming" on
 
 | Param | Value |
 |---|---|
-| max_run_speed | 520 px/s |
-| ground_accel | 6000 px/s² (full speed in under 0.1 s) |
-| ground_decel | 6000 px/s² |
-| turn_accel | 9000 px/s² (reversing direction is extra snappy) |
-| air_accel / air_decel | 3600 / 2400 px/s² |
+| max_run_speed | 580 px/s |
+| ground_accel | 7500 px/s² (full speed in about 0.08 s) |
+| ground_decel | 8000 px/s² |
+| turn_accel | 10000 px/s² (reversing direction is extra snappy) |
+| air_accel / air_decel | 4200 / 2800 px/s² |
 
 - Facing flips instantly with input. There is no turn-around animation lock.
 
@@ -55,13 +55,13 @@ Attack direction uses a stricter threshold: vertical input counts as "aiming" on
 | Param | Value |
 |---|---|
 | jump_height | 240 px (about 3.75 tiles) |
-| time_to_apex | 0.34 s |
-| → derived gravity | `2h / t²` ≈ 4150 px/s² |
-| → derived jump_velocity | `2h / t` ≈ 1410 px/s |
-| fall_gravity_multiplier | 1.7 (falls faster than it rises, for weight) |
+| time_to_apex | 0.30 s (same height, reached faster, so the jump is snappier) |
+| → derived gravity | `2h / t²` ≈ 5330 px/s² |
+| → derived jump_velocity | `2h / t` ≈ 1600 px/s |
+| fall_gravity_multiplier | 2.0 (falls much faster than it rises, so the character gets back to the ground quickly) |
 | jump_cut_multiplier | 0.4 (releasing jump early multiplies upward velocity by this) |
 | apex_hang_threshold / multiplier | when \|vy\| < 80 → gravity × 0.6 (brief float at the top, for air control) |
-| max_fall_speed | 1300 px/s |
+| max_fall_speed | 1500 px/s |
 | coyote_time | 0.10 s (can still jump after leaving a ledge) |
 | jump_buffer | 0.12 s (a jump pressed just before landing still fires) |
 
@@ -73,7 +73,7 @@ Attack direction uses a stricter threshold: vertical input counts as "aiming" on
 | Param | Value |
 |---|---|
 | wall_slide_max_speed | 260 px/s |
-| wall_jump_velocity | x 520 away from the wall, y = jump_velocity × 0.95 |
+| wall_jump_velocity | x 580 away from the wall, y = jump_velocity × 0.95 |
 | wall_jump_input_lock | 0.14 s (holding toward the wall cannot cancel the push-off) |
 | wall_coyote_time | 0.08 s |
 
@@ -92,7 +92,7 @@ Attack direction uses a stricter threshold: vertical input counts as "aiming" on
 | attack cancel | allowed from 0.04 s into the dash |
 | jump cancel (ground dash only) | allowed, and keeps horizontal dash speed for that jump ("dash-jump" tech) |
 
-**The dash charge refreshes on:** landing, touching a wall, **landing any attack on an enemy**, and a pogo.
+**The dash charge refreshes on:** landing, touching a wall, and **landing any attack on an enemy** (including the slam).
 
 ## 4. Combat
 
@@ -101,30 +101,62 @@ Attack direction uses a stricter threshold: vertical input counts as "aiming" on
 | Input when attack pressed | Grounded | Airborne |
 |---|---|---|
 | none / left / right | ground combo hit (forward) | air side slash |
-| up | up slash | up slash |
-| down | forward (ground combo) | **down slash → pogo** |
+| up | forward (ground combo); the wide arc already covers above the head | air side slash |
+| down | forward (ground combo) | **ground slam** (see 4.3) |
+
+There is **no separate up attack and no pogo.**
 
 - Attack timing uses phases: startup → active (hitbox on) → recovery. In the prototype this is **driven by code from AttackData**, with no AnimationPlayer yet. A placeholder slash shape (Polygon2D arc) is visible during the active phase.
-- Air attacks **do not stop momentum**. Ground attacks apply a small forward lunge.
+- Air attacks **do not stop momentum**. Ground attacks apply a forward lunge.
+
+### 4.1b The big-sword swing
+
+- **Placeholder sword:** a long rectangle (about 150 × 18 px) pivoting from the player's shoulder, visible at all times. While idle it rests angled down and back.
+- **Swing phases** follow the AttackData timing:
+  - *startup* = wind-up: the sword pulls back behind the player;
+  - *active* = a fast sweep through the arc, with a crescent-shaped slash trail (Polygon2D) that fades over about 0.1 s;
+  - *recovery* = follow-through: the sword eases back to rest.
+- **Hitbox:** one wide crescent covering the whole arc, on only during *active*. It reaches about **180 px** in front of the player's centre. Vertically it covers from about **150 px above** the player's centre (well above the head, and slightly behind it) down to the player's feet. Hitbox shape must match the visible trail.
+- **Combo swing directions** alternate so the combo looks like a heavy sword, not a stab:
+  - Hit 1: diagonal slash from high to low;
+  - Hit 2: rising return slash from low to high;
+  - Hit 3 (finisher): a big overhead arc with a larger trail and slightly longer reach (about 210 px).
 - Facing can change between combo hits, but not during a hit.
 
 ### 4.2 Ground combo (3 hits)
 
 | | dmg | startup | active | recovery | lunge | enemy knockback | hitstop | shake |
 |---|---|---|---|---|---|---|---|---|
-| Hit 1 | 1 | 0.03 | 0.07 | 0.10 | 70 px | 280 | 0.035 s | 0.10 |
-| Hit 2 | 1 | 0.03 | 0.07 | 0.10 | 70 px | 280 | 0.035 s | 0.10 |
-| Hit 3 (finisher) | 2 | 0.05 | 0.09 | 0.18 | 100 px | 520 | 0.06 s | 0.22 |
+| Hit 1 | 1 | 0.04 | 0.08 | 0.12 | 70 px | 340 | 0.045 s | 0.12 |
+| Hit 2 | 1 | 0.04 | 0.08 | 0.12 | 70 px | 340 | 0.045 s | 0.12 |
+| Hit 3 (finisher) | 2 | 0.08 | 0.10 | 0.22 | 110 px | 600 | 0.08 s | 0.30 |
 
 - An attack pressed during the active or recovery phase is **buffered** into the next hit.
 - If no input arrives within 0.15 s after recovery ends, the combo resets (lenient, so combos flow while moving).
 - Dash **and jump** can cancel **recovery** at any time. That is the escape hatch.
-- Air attacks: dmg 1, startup 0.02, active 0.08, recovery 0.10, and 0.22 s between air attacks.
+- Air side slash: same wide arc as Hit 1. dmg 1, startup 0.03, active 0.09, recovery 0.12, and 0.25 s between air attacks.
 
 ### 4.3 Hit reactions (positioning)
 
 - **Attacker recoil:** a side hit on an enemy pushes the player back 120 px/s (light, so you stay in the fight), so the player has to keep re-engaging. An up-slash hit gives no recoil.
-- **Pogo:** a down slash hitting an enemy or a hazard sets `velocity.y = -jump_velocity × 0.85` and refreshes the dash. Holding or releasing jump does not cut a pogo.
+
+### 4.3b Ground slam (down + attack while airborne)
+
+A committed, powerful move. The reward is a hit in both directions; the risk is the landing recovery.
+
+| Phase | Behaviour | Value |
+|---|---|---|
+| Wind-up | The player freezes in the air (velocity 0), with the sword raised overhead | 0.07 s |
+| Plunge | Straight down at a fixed speed, with no horizontal control. A small hitbox under the player damages enemies it passes through | 1800 px/s, 1 dmg |
+| Impact | On landing: a shockwave hitbox at the feet, extending both ways | about 360 × 80 px total (180 px each side), 2 dmg |
+| Impact knockback | Enemies are pushed **away from the player** and slightly up | x 450, y −300 |
+| Impact feel | Always: shake 0.35 plus a dust burst both ways, even if nothing is hit. On hit: hitstop 0.08 s | |
+| Landing recovery | The player cannot act | 0.22 s; dash can cancel only after the first 0.12 s |
+
+- The plunge cannot be cancelled. A slam over a pit keeps falling until the kill plane.
+- No invincibility during the slam.
+- A connected slam refreshes the dash, like any hit.
+- Spikes are a hazard only; nothing bounces off them.
 
 ### 4.4 Player damage
 
@@ -193,7 +225,7 @@ States: **Patrol → Chase → Hurt → Dead**
 - **Stairs:** 3 one-tile-thick platforms at 2, 4 and 6 tiles high. These test jump height and variable jump.
 - **Wall-jump shaft:** two walls 4 tiles apart, 10 tiles tall, with a ledge at the top.
 - **Gap:** 7 tiles wide. It needs a jump plus the dash.
-- **Spike pit:** 4 tiles of spikes. It tests the pogo and the hazard respawn.
+- **Spike pit:** 4 tiles of spikes. It tests jump/dash precision and the hazard respawn.
 - **Arena:** a flat area, 20 tiles wide, with 2 floating platforms and 3 walkers. `debug_reset` respawns the walkers.
 - **Kill plane** below the whole map counts as a hazard.
 - **Geometry:** StaticBody2D + CollisionShape2D + ColorRect for the greybox, with no TileMap yet. This is simpler for the MCP; switch to TileMapLayer later.
@@ -220,4 +252,6 @@ Final art, animation, sound (optional placeholder beeps at most), menus, saving,
 2. Should enemy contact damage stay on during the enemy's stun?
 3. Is the perfect dodge fun, or does it add noise?
 4. Does hitstop still feel impactful at these short Dead Cells-style durations, or does it need to be longer?
-5. Does this game want a resource (e.g. hits build "Edge" meter for a special)? Decide in the next phase.
+5. Does the slam's landing recovery feel fair, or punishing?
+6. Does the wide arc make spacing too easy? If so, shrink the reach before adding enemies that punish it.
+7. Does this game want a resource (e.g. hits build "Edge" meter for a special)? Decide in the next phase.

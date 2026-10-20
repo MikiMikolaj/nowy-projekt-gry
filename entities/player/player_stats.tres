@@ -4,3 +4,13 @@
 
 [resource]
 script = ExtResource("1_01d8e")
+max_run_speed = 580.0
+ground_accel = 7500.0
+ground_decel = 8000.0
+turn_accel = 10000.0
+air_accel = 4200.0
+air_decel = 2800.0
+time_to_apex = 0.3
+fall_gravity_multiplier = 2.0
+max_fall_speed = 1500.0
+wall_jump_velocity_x = 580.0
