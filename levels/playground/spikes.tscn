@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dbwygypcq5f60"]
 
-[ext_resource type="Script" uid="uid://dp50nw6fpe7xv" path="res://core/combat/hitbox.gd" id="1_sfc78"]
+[ext_resource type="Script" uid="uid://c44qsn2tavqrh" path="res://levels/playground/hazard.gd" id="1_sfc78"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sfc78"]
 size = Vector2(256, 40)
@@ -9,7 +9,6 @@ size = Vector2(256, 40)
 collision_layer = 64
 collision_mask = 8
 script = ExtResource("1_sfc78")
-enabled_on_ready = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=782540819]
 position = Vector2(0, -24)

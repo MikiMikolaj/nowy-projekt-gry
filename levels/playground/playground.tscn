@@ -4,7 +4,15 @@
 [ext_resource type="PackedScene" uid="uid://bmvvik2uxnhyr" path="res://entities/player/player.tscn" id="2_6txw3"]
 [ext_resource type="PackedScene" uid="uid://qqmcgl43v8yd" path="res://levels/playground/block.tscn" id="2_43xo0"]
 [ext_resource type="PackedScene" uid="uid://c54dcrrfwry7d" path="res://camera/game_camera.tscn" id="3_43xo0"]
+[ext_resource type="Script" uid="uid://c44qsn2tavqrh" path="res://levels/playground/hazard.gd" id="3_w4tve"]
+[ext_resource type="Script" uid="uid://bhlcdbh1m0nqt" path="res://core/utils/rect_shape.gd" id="4_8v5es"]
 [ext_resource type="PackedScene" uid="uid://uxsaort8omlx" path="res://entities/enemies/training_dummy/training_dummy.tscn" id="4_k01ge"]
+[ext_resource type="Script" uid="uid://cmds1kssttwix" path="res://entities/enemies/enemy_spawner.gd" id="8_8v5es"]
+[ext_resource type="PackedScene" uid="uid://c8brm2tsvgqwc" path="res://entities/enemies/walker/walker.tscn" id="9_ic5gw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ic5gw"]
+resource_local_to_scene = true
+size = Vector2(5760, 64)
 
 [node name="Playground" type="Node2D" unique_id=1492535667]
 
@@ -79,9 +87,20 @@ size = Vector2(128, 1152)
 [node name="Spikes" parent="Level" unique_id=463901192 instance=ExtResource("2_1fyqe")]
 position = Vector2(3712, 64)
 
+[node name="KillPlane" type="Area2D" parent="Level" unique_id=974722991]
+position = Vector2(2688, 512)
+collision_layer = 64
+collision_mask = 8
+script = ExtResource("3_w4tve")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Level/KillPlane" unique_id=943626466]
+shape = SubResource("RectangleShape2D_ic5gw")
+script = ExtResource("4_8v5es")
+size = Vector2(5760, 64)
+
 [node name="Markers" type="Node2D" parent="." unique_id=666384863]
 
-[node name="PlayerSpawn" type="Marker2D" parent="Markers" unique_id=174558604]
+[node name="PlayerSpawn" type="Marker2D" parent="Markers" unique_id=174558604 groups=["player_spawn"]]
 position = Vector2(192, -48)
 
 [node name="TrainingDummy" type="Marker2D" parent="Markers" unique_id=1533197239]
@@ -89,18 +108,6 @@ position = Vector2(704, 0)
 
 [node name="SpikePit" type="Marker2D" parent="Markers" unique_id=1639151282]
 position = Vector2(3712, 64)
-
-[node name="Walker1" type="Marker2D" parent="Markers" unique_id=691163564]
-position = Vector2(4160, 0)
-
-[node name="Walker2" type="Marker2D" parent="Markers" unique_id=1117549623]
-position = Vector2(4736, 0)
-
-[node name="Walker3" type="Marker2D" parent="Markers" unique_id=1504296636]
-position = Vector2(5248, 0)
-
-[node name="KillPlane" type="Marker2D" parent="Markers" unique_id=1467328140]
-position = Vector2(2688, 512)
 
 [node name="Player" parent="." unique_id=914471942 instance=ExtResource("2_6txw3")]
 position = Vector2(192, -48)
@@ -113,3 +120,15 @@ limit_bottom = 384
 
 [node name="TrainingDummy" parent="." unique_id=519304952 instance=ExtResource("4_k01ge")]
 position = Vector2(704, 0)
+
+[node name="Walkers" type="Node2D" parent="." unique_id=1595866672]
+script = ExtResource("8_8v5es")
+
+[node name="Walker1" parent="Walkers" unique_id=167500177 instance=ExtResource("9_ic5gw")]
+position = Vector2(4160, -36)
+
+[node name="Walker2" parent="Walkers" unique_id=431976583 instance=ExtResource("9_ic5gw")]
+position = Vector2(4736, -36)
+
+[node name="Walker3" parent="Walkers" unique_id=1512122010 instance=ExtResource("9_ic5gw")]
+position = Vector2(5248, -36)

@@ -21,14 +21,14 @@ func enter() -> void:
 	if not _started_on_floor:
 		player.dash_charges -= 1
 	player.is_dashing = true
-	player.is_invincible = true
+	player.damage.dash_invincible = true
 	player.wall_jump_lock_timer = 0.0
 	player.velocity = _direction * player.stats.dash_speed
 
 
 func exit() -> void:
 	player.is_dashing = false
-	player.is_invincible = false
+	player.damage.dash_invincible = false
 	if _started_on_floor:
 		player.dash_cooldown_timer = player.stats.ground_dash_cooldown
 	if not _keep_speed_on_exit:
@@ -63,7 +63,7 @@ func physics_update(delta: float) -> void:
 	player.move_and_slide()
 
 	_elapsed += delta
-	player.is_invincible = _elapsed < stats.dash_invincibility_time
+	player.damage.dash_invincible = _elapsed < stats.dash_invincibility_time
 
 	if _elapsed >= stats.dash_duration:
 		if not player.is_on_floor():

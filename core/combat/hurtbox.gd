@@ -30,7 +30,9 @@ func receive_hit(hitbox: Hitbox) -> bool:
 	if health != null and health.invincible:
 		hit_evaded.emit(hitbox)
 		return false
-	hit_received.emit(hitbox)
+	# Damage first, then announce: listeners can check health.is_dead() and skip the hurt reaction on a
+	# killing blow (death is handled by HealthComponent.died).
 	if health != null:
 		health.take_damage(hitbox.attack_data.damage, hitbox.attacker)
+	hit_received.emit(hitbox)
 	return true

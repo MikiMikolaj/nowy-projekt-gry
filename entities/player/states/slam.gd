@@ -114,5 +114,5 @@ func _on_hit_landed(hurtbox: Hurtbox, data: AttackData) -> void:
 		Events.camera_shake_requested.emit(data.shake)
 	var spark_direction: Vector2 = Vector2.DOWN
 	if data == impact_attack:
-		spark_direction = data.knockback_velocity(player.global_position, hurtbox.global_position).normalized()
+		spark_direction = data.knockback_velocity(player, hurtbox.global_position).normalized()
 	HitSpark.spawn(player.get_parent() as Node2D, hurtbox.global_position, spark_direction)

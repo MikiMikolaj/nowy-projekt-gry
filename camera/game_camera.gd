@@ -34,6 +34,7 @@ func _ready() -> void:
 	_noise.frequency = 1.0
 	_last_ticks_usec = Time.get_ticks_usec()
 	Events.camera_shake_requested.connect(add_trauma)
+	Events.player_respawned.connect(_snap_to_target)
 	if target == null:
 		target = get_tree().get_first_node_in_group(&"player") as Player
 	if target != null:
@@ -72,3 +73,12 @@ func _process(_delta: float) -> void:
 
 func add_trauma(amount: float) -> void:
 	_trauma = clampf(_trauma + amount, 0.0, 1.0)
+
+
+# A respawn teleports across the level; cut straight there instead of smoothly panning.
+func _snap_to_target() -> void:
+	if target == null:
+		return
+	_look_ahead_x = target.facing * look_ahead_distance
+	global_position = target.global_position + Vector2(_look_ahead_x, 0.0)
+	reset_smoothing()

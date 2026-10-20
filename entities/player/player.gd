@@ -23,13 +23,12 @@ var wall_jump_lock_timer: float = 0.0
 var dash_charges: int = 0
 var dash_cooldown_timer: float = 0.0
 var is_dashing: bool = false
-## Wired to the Hurtbox in Stage 4.
-var is_invincible: bool = false
 
 var attack_buffer_timer: float = 0.0
 var air_attack_cooldown_timer: float = 0.0
 
 @onready var visual: PlayerVisual = $Visual
+@onready var damage: PlayerDamage = $Damage
 @onready var attack_pivot: Node2D = $AttackPivot
 @onready var wall_check_left: RayCast2D = $WallCheckLeft
 @onready var wall_check_right: RayCast2D = $WallCheckRight

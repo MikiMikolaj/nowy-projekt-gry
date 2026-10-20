@@ -2,7 +2,16 @@
 class_name AttackData
 extends Resource
 
+enum KnockbackDirection {
+	## Push the target the way the attacker faces (sword swings).
+	ATTACKER_FACING,
+	## Push the target away from the attacker's position, whichever side it is on (slam impact).
+	AWAY_FROM_ATTACKER,
+}
+
 @export var damage: int = 1
+## Hazards (spikes, kill plane) send the player back to the last safe ground instead of knocking them back.
+@export var is_hazard: bool = false
 
 @export_group("Timing (seconds)")
 ## Wind-up: the sword pulls back.
@@ -19,6 +28,7 @@ extends Resource
 @export var knockback: float = 0.0
 ## Upward speed applied to the target, in px/s (0 = purely sideways).
 @export var knockback_lift: float = 0.0
+@export var knockback_direction: KnockbackDirection = KnockbackDirection.ATTACKER_FACING
 @export var hitstop: float = 0.045
 ## Camera trauma added on hit (0..1).
 @export_range(0.0, 1.0) var shake: float = 0.12
@@ -39,11 +49,14 @@ func total_duration() -> float:
 	return startup + active + recovery
 
 
-## Knockback for a target at target_pos hit by an attacker at attacker_pos: always away from the attacker's
-## position (not the attacker's facing), so a hit landing behind or below still pushes outward.
-func knockback_velocity(attacker_pos: Vector2, target_pos: Vector2) -> Vector2:
-	var away: float = 1.0 if target_pos.x >= attacker_pos.x else -1.0
-	return Vector2(away * knockback, -knockback_lift)
+## Knockback for a target at target_pos. Uses the attacker's `facing` for ATTACKER_FACING; falls back to
+## "away from the attacker" when the attacker has no facing (or for AWAY_FROM_ATTACKER).
+func knockback_velocity(attacker: Node2D, target_pos: Vector2) -> Vector2:
+	var direction: float = 1.0 if target_pos.x >= attacker.global_position.x else -1.0
+	var attacker_facing: Variant = attacker.get(&"facing")
+	if knockback_direction == KnockbackDirection.ATTACKER_FACING and attacker_facing != null:
+		direction = signf(float(attacker_facing))
+	return Vector2(direction * knockback, -knockback_lift)
 
 
 ## 1 for a high→low sweep, -1 for low→high.

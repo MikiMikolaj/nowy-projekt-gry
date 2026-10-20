@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://c8brm2tsvgqwc"]
+
+[ext_resource type="Script" uid="uid://62xylhuokj3c" path="res://entities/enemies/walker/walker.gd" id="1_rq36w"]
+[ext_resource type="Script" uid="uid://bhlcdbh1m0nqt" path="res://core/utils/rect_shape.gd" id="2_ude3u"]
+[ext_resource type="Script" uid="uid://cdexfwkwy45l" path="res://core/combat/hurtbox.gd" id="3_wgmon"]
+[ext_resource type="Script" uid="uid://dvpsy4g3q2x0s" path="res://core/combat/health_component.gd" id="4_boaio"]
+[ext_resource type="Script" uid="uid://dp50nw6fpe7xv" path="res://core/combat/hitbox.gd" id="5_aqoou"]
+[ext_resource type="Script" uid="uid://dkv8uedrmn5l4" path="res://core/state_machine/state_machine.gd" id="6_1it8j"]
+[ext_resource type="Script" uid="uid://c5wkc5t6gvauy" path="res://entities/enemies/walker/states/patrol.gd" id="7_xfjw3"]
+[ext_resource type="Script" uid="uid://iyrkdt1vdb0e" path="res://entities/enemies/walker/states/chase.gd" id="8_0f83u"]
+[ext_resource type="Script" uid="uid://cal0rxytu10wk" path="res://entities/enemies/walker/states/hurt.gd" id="9_8lc6w"]
+[ext_resource type="Script" uid="uid://b12ucy6orgvls" path="res://entities/enemies/walker/states/dead.gd" id="10_hq2le"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7cwjt"]
+resource_local_to_scene = true
+size = Vector2(56, 72)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l6kc8"]
+resource_local_to_scene = true
+size = Vector2(56, 72)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lwua5"]
+resource_local_to_scene = true
+size = Vector2(48, 64)
+
+[node name="Walker" type="CharacterBody2D" unique_id=167500177]
+collision_layer = 4
+script = ExtResource("1_rq36w")
+
+[node name="Visual" type="Node2D" parent="." unique_id=1539639477]
+position = Vector2(0, 36)
+
+[node name="Body" type="ColorRect" parent="Visual" unique_id=655724328]
+offset_left = -28.0
+offset_top = -72.0
+offset_right = 28.0
+mouse_filter = 2
+color = Color(0.86, 0.22, 0.22, 1)
+
+[node name="Eye" type="ColorRect" parent="Visual" unique_id=74316767]
+offset_left = 10.0
+offset_top = -62.0
+offset_right = 20.0
+offset_bottom = -52.0
+mouse_filter = 2
+color = Color(0.12, 0.05, 0.05, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1274592354]
+shape = SubResource("RectangleShape2D_7cwjt")
+script = ExtResource("2_ude3u")
+size = Vector2(56, 72)
+
+[node name="Hurtbox" type="Area2D" parent="." unique_id=2053070307]
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("3_wgmon")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=814836992]
+shape = SubResource("RectangleShape2D_l6kc8")
+script = ExtResource("2_ude3u")
+size = Vector2(56, 72)
+
+[node name="HealthComponent" type="Node" parent="." unique_id=673452904]
+script = ExtResource("4_boaio")
+
+[node name="ContactHitbox" type="Area2D" parent="." unique_id=198227335]
+collision_layer = 64
+collision_mask = 8
+script = ExtResource("5_aqoou")
+enabled_on_ready = true
+continuous = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ContactHitbox" unique_id=735310575]
+shape = SubResource("RectangleShape2D_lwua5")
+script = ExtResource("2_ude3u")
+size = Vector2(48, 64)
+
+[node name="LedgeCheck" type="RayCast2D" parent="." unique_id=2077836996]
+position = Vector2(32, 20)
+target_position = Vector2(0, 40)
+
+[node name="WallCheck" type="RayCast2D" parent="." unique_id=282395235]
+target_position = Vector2(34, 0)
+
+[node name="StateMachine" type="Node" parent="." unique_id=1387772595]
+script = ExtResource("6_1it8j")
+
+[node name="Patrol" type="Node" parent="StateMachine" unique_id=2043333199]
+script = ExtResource("7_xfjw3")
+
+[node name="Chase" type="Node" parent="StateMachine" unique_id=1908563423]
+script = ExtResource("8_0f83u")
+
+[node name="Hurt" type="Node" parent="StateMachine" unique_id=1604587336]
+script = ExtResource("9_8lc6w")
+
+[node name="Dead" type="Node" parent="StateMachine" unique_id=1272697137]
+script = ExtResource("10_hq2le")

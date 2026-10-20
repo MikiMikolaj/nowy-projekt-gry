@@ -1,4 +1,4 @@
-# PlayerStats: every tunable number for the player (movement spec 3.1–3.4, combat spec 4.1–4.2, squash spec 5).
+# PlayerStats: every tunable number for the player (movement spec 3.1–3.4, combat 4.1–4.4, squash spec 5).
 class_name PlayerStats
 extends Resource
 
@@ -48,6 +48,23 @@ enum DashDirectionMode { HORIZONTAL, EIGHT_WAY }
 @export var dash_attack_cancel_time: float = 0.04
 ## Ground dash can be jump-cancelled, keeping its horizontal speed ("dash-jump").
 @export var dash_jump_enabled: bool = true
+
+@export_group("Damage")
+@export var max_hp: int = 5
+## Knockback when hurt: x away from the source, y upward (negative), in px/s.
+@export var hurt_knockback: Vector2 = Vector2(340.0, -420.0)
+## No control for this long after a hit.
+@export var hurt_stun_time: float = 0.25
+## Invincible (and flickering) for this long after a hit.
+@export var hurt_invincibility_time: float = 1.0
+@export var hurt_hitstop: float = 0.10
+@export_range(0.0, 1.0) var hurt_shake: float = 0.5
+## How fast the sprite blinks while invincible after a hit, in seconds per blink.
+@export var hurt_flicker_interval: float = 0.06
+## Opacity on the "off" blink of the flicker.
+@export_range(0.0, 1.0) var hurt_flicker_alpha: float = 0.25
+## Frozen this long after dying before respawning.
+@export var death_freeze_time: float = 0.4
 
 @export_group("Combat")
 ## Vertical input must exceed this to count as aiming an attack up or down.

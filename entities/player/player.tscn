@@ -13,15 +13,23 @@
 [ext_resource type="Script" uid="uid://cdexfwkwy45l" path="res://core/combat/hurtbox.gd" id="10_wvtmh"]
 [ext_resource type="Script" uid="uid://dvpsy4g3q2x0s" path="res://core/combat/health_component.gd" id="11_7thud"]
 [ext_resource type="Script" uid="uid://cy0qdqjjkqpis" path="res://entities/player/states/slam.gd" id="11_yqrof"]
+[ext_resource type="Script" uid="uid://r4euindtamnq" path="res://entities/player/states/hurt.gd" id="12_we0b7"]
 [ext_resource type="PackedScene" uid="uid://6p1ub6lg4qyi" path="res://entities/player/sword.tscn" id="13_j3ovn"]
+[ext_resource type="Script" uid="uid://6cu34v43prf2" path="res://entities/player/states/dead.gd" id="13_mtric"]
 [ext_resource type="PackedScene" uid="uid://bcvugqmq66ibb" path="res://entities/player/attacks/swing_hitbox.tscn" id="14_afbqv"]
 [ext_resource type="Script" uid="uid://xt4pgy234id0" path="res://core/combat/rect_hitbox.gd" id="15_gx6sm"]
+[ext_resource type="Script" uid="uid://d22jdqfa6vocd" path="res://entities/player/player_damage.gd" id="17_3wlsy"]
+[ext_resource type="Script" uid="uid://bhlcdbh1m0nqt" path="res://core/utils/rect_shape.gd" id="18_b2kln"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8fjmc"]
 size = Vector2(44, 96)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wvtmh"]
 size = Vector2(44, 96)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_we0b7"]
+resource_local_to_scene = true
+size = Vector2(172, 176)
 
 [node name="Player" type="CharacterBody2D" unique_id=914471942 groups=["player"]]
 collision_layer = 2
@@ -76,6 +84,12 @@ script = ExtResource("10_j3ovn")
 [node name="Slam" type="Node" parent="StateMachine" unique_id=2009193730]
 script = ExtResource("11_yqrof")
 
+[node name="Hurt" type="Node" parent="StateMachine" unique_id=619709240]
+script = ExtResource("12_we0b7")
+
+[node name="Dead" type="Node" parent="StateMachine" unique_id=1247506583]
+script = ExtResource("13_mtric")
+
 [node name="WallCheckLeft" type="RayCast2D" parent="." unique_id=1798843103]
 target_position = Vector2(-26, 0)
 
@@ -116,3 +130,17 @@ collision_layer = 32
 collision_mask = 16
 script = ExtResource("15_gx6sm")
 size = Vector2(360, 80)
+
+[node name="Damage" type="Node" parent="." unique_id=387267539]
+script = ExtResource("17_3wlsy")
+
+[node name="HazardSensor" type="Area2D" parent="." unique_id=584768211]
+position = Vector2(0, 40)
+collision_layer = 0
+collision_mask = 64
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HazardSensor" unique_id=1876019220]
+shape = SubResource("RectangleShape2D_we0b7")
+script = ExtResource("18_b2kln")
+size = Vector2(172, 176)

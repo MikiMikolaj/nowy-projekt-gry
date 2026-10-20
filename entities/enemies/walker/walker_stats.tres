@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="WalkerStats" format=3]
+
+[ext_resource type="Script" path="res://entities/enemies/walker/walker_stats.gd" id="1_b0p65"]
+
+[resource]
+script = ExtResource("1_b0p65")

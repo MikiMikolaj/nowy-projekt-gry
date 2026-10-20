@@ -1,4 +1,5 @@
-# Hitbox: an Area2D that hits any Hurtbox it overlaps while enabled, once per target per enable().
+# Hitbox: an Area2D that hits any Hurtbox it overlaps while enabled: once per target per enable(), or every frame
+# if `continuous`.
 class_name Hitbox
 extends Area2D
 
@@ -12,6 +13,9 @@ signal hit_landed(hurtbox: Hurtbox)
 @export var attacker: Node
 ## Player attacks start off and are enabled per swing; enemy contact hitboxes and hazards stay on.
 @export var enabled_on_ready: bool = false
+## Keep hitting everything it overlaps, every physics frame (contact damage, hazards). Targets are then
+## protected only by their own invincibility, so standing inside one hurts again once i-frames end.
+@export var continuous: bool = false
 
 # Everything already hit since the last enable(), so one swing can't hit the same target twice.
 var _hit_targets: Array[Area2D] = []
@@ -40,10 +44,24 @@ func disable() -> void:
 	set_deferred(&"monitorable", false)
 
 
+func _physics_process(_delta: float) -> void:
+	if not continuous or not monitoring:
+		return
+	for area: Area2D in get_overlapping_areas():
+		_try_hit(area)
+
+
 func _on_area_entered(area: Area2D) -> void:
+	_try_hit(area)
+
+
+func _try_hit(area: Area2D) -> void:
 	var hurtbox: Hurtbox = area as Hurtbox
-	if hurtbox == null or attack_data == null or hurtbox in _hit_targets:
+	if hurtbox == null or attack_data == null:
+		return
+	if not continuous and hurtbox in _hit_targets:
 		return
 	if hurtbox.receive_hit(self):
-		_hit_targets.append(hurtbox)
+		if not continuous:
+			_hit_targets.append(hurtbox)
 		hit_landed.emit(hurtbox)

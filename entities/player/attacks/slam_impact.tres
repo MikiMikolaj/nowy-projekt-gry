@@ -10,5 +10,6 @@ active = 0.06
 recovery = 0.22
 knockback = 450.0
 knockback_lift = 300.0
+knockback_direction = 1
 hitstop = 0.08
 shake = 0.35

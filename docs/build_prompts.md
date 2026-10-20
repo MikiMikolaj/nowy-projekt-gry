@@ -117,17 +117,23 @@ Run, fix errors, and summarise. Tell me how to test the combo buffer, the dash-c
 ## Stage 4 — Walker enemy + player damage, death and respawn
 
 ```
-Read CLAUDE.md and docs/prototype_design.md sections 4.4 and 6.1.
+Read CLAUDE.md and docs/prototype_design.md (spec v0.2) sections 4.1b, 4.3b, 4.4 and 6.1.
 
 Stage 4: the first real enemy and the player taking damage.
 
-1. entities/enemies/walker: CharacterBody2D red rectangle (56x72) with its own small state machine (Patrol, Chase, Hurt, Dead), WalkerStats resource + .tres, a Hurtbox, a HealthComponent, a contact Hitbox (enemy_attack), and a RayCast2D ledge check plus a wall check. Behaviour exactly per spec 6.1, including knockback from the AttackData, the stun, the white flash, and the death sequence (hitstop, shake, effects/death_burst.tscn, squash, queue_free, Events.enemy_killed).
-2. Player damage per spec 4.4: add Hurt and Dead states, knockback away from the source, stun, 1.0 s invincibility with flicker, hitstop and shake. Ignore hits while is_invincible (dash i-frames or post-hurt).
-3. Hazards: spikes and the kill plane deal 1 damage and teleport the player to the last safe ground position. The player tracks this: the last position where they were on the floor and not near a hazard.
-4. Death: freeze, then respawn at PlayerSpawn with full HP; emit Events.player_died / player_respawned.
-5. Place 3 walkers in the arena. debug_reset (R / Select) respawns all walkers and resets the player. Build this with an EnemySpawner node that remembers the initial enemy positions.
+1. entities/enemies/walker: CharacterBody2D red rectangle (56x72) with its own small state machine (Patrol, Chase, Hurt, Dead), WalkerStats resource + .tres, a Hurtbox, a HealthComponent, a contact Hitbox (enemy_attack), and a RayCast2D ledge check plus a wall check. Behaviour exactly per spec 6.1: the stun, the white flash, and the death sequence (hitstop, shake, effects/death_burst.tscn, squash, queue_free, Events.enemy_killed).
+2. Knockback on the walker comes from the AttackData that hit it:
+   - sword swings push it in the player's facing direction;
+   - the slam impact pushes it AWAY from the player's position (and slightly up), so enemies on both sides fly outward;
+   - a walker can take at most one plunge hit and one impact hit per slam.
+3. Player damage per spec 4.4: add Hurt and Dead states, knockback away from the source, stun, 1.0 s invincibility with flicker, hitstop and shake. Ignore hits while is_invincible (dash i-frames or post-hurt). There are no i-frames during the slam. If the player is hit during slam recovery, Hurt overrides it.
+4. Hazards: spikes and the kill plane deal 1 damage and teleport the player to the last safe ground position. The player tracks this: the last position where they were on the floor and not near a hazard. Spikes are hazard-only (there is no pogo).
+5. Death: freeze, then respawn at PlayerSpawn with full HP; emit Events.player_died / player_respawned.
+6. Place 3 walkers in the arena. debug_reset (R / Select) respawns all walkers and resets the player. Build this with an EnemySpawner node that remembers the initial enemy positions.
 
-Run, fix errors, and summarise. Tell me the three stats most worth tweaking on the walker.
+Run, fix errors, and summarise. Then tell me:
+- the three walker stats most worth tweaking;
+- whether the sword reach (about 180 px) makes walkers trivially easy to fight. Only report this; do not change it.
 ```
 
 ---
