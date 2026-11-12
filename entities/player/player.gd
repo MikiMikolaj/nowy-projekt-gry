@@ -14,6 +14,7 @@ var facing: int = 1:
 			attack_pivot.scale.x = value
 var coyote_timer: float = 0.0
 var jump_buffer_timer: float = 0.0
+var air_jumps_left: int = 0
 
 ## -1 = wall on the left, 1 = wall on the right. Only meaningful while wall_coyote_timer > 0.
 var last_wall_dir: int = 0
@@ -70,6 +71,9 @@ func _physics_process(delta: float) -> void:
 	# Not while dashing, or a dash that starts next to a wall would be free.
 	if not is_dashing and (grounded or wall_dir != 0):
 		refresh_dash()
+	# The air jump comes back on the same terms as the air dash: landing or touching a wall.
+	if grounded or wall_dir != 0:
+		air_jumps_left = stats.air_jumps
 
 
 # --- Input -------------------------------------------------------------------
@@ -150,20 +154,33 @@ func has_buffered_jump() -> bool:
 	return jump_buffer_timer > 0.0
 
 
+func can_double_jump() -> bool:
+	return not is_on_floor() and air_jumps_left > 0
+
+
 func wants_jump() -> bool:
-	return has_buffered_jump() and (can_jump() or can_wall_jump())
+	return has_buffered_jump() and (can_jump() or can_wall_jump() or can_double_jump())
 
 
-# Called by the Jump state; a ground (or coyote) jump takes priority over a wall jump.
+# Called by the Jump state. Priority: ground (or coyote) jump, then wall jump, then the double jump, so
+# coyote time and walls never waste the air jump.
 func start_jump() -> void:
 	if can_jump():
 		jump()
-	else:
+	elif can_wall_jump():
 		wall_jump()
+	else:
+		double_jump()
 
 
 func jump() -> void:
 	velocity.y = -(stats.jump_velocity + _jump_step_correction())
+	_consume_jump()
+
+
+func double_jump() -> void:
+	velocity.y = -(stats.double_jump_velocity + _jump_step_correction())
+	air_jumps_left -= 1
 	_consume_jump()
 
 

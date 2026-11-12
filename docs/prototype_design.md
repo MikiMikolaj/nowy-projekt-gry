@@ -68,7 +68,7 @@ Attack direction uses a stricter threshold: vertical input counts as "aiming" on
 ### 3.3 Wall slide and wall jump
 
 - A wall slide starts when airborne, falling, touching a wall (RayCast2D check) **and** holding toward it.
-- There is no wall climbing and no double jump.
+- There is no wall climbing.
 
 | Param | Value |
 |---|---|

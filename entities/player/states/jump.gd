@@ -1,4 +1,4 @@
-# Jump: rising after a ground or wall jump. Releasing jump early cuts the rise (variable jump height).
+# Jump: rising after a ground, wall or double jump. Releasing jump early cuts the rise (variable jump height).
 extends PlayerState
 
 var _was_cut: bool = false
@@ -16,8 +16,8 @@ func physics_update(delta: float) -> void:
 	if player.wants_attack():
 		state_machine.transition_to(&"Attack")
 		return
-	# Wall jump while still rising (e.g. chaining up a shaft): re-enter this state for a fresh jump.
-	if player.has_buffered_jump() and player.can_wall_jump():
+	# Wall or double jump while still rising: re-enter this state for a fresh jump (and a fresh jump cut).
+	if player.has_buffered_jump() and (player.can_wall_jump() or player.can_double_jump()):
 		state_machine.transition_to(&"Jump")
 		return
 

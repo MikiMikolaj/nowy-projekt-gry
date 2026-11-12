@@ -1,17 +1,18 @@
-[gd_resource type="Resource" script_class="PlayerStats" format=3]
+[gd_resource type="Resource" script_class="PlayerStats" format=3 uid="uid://besipntdtlyo2"]
 
-[ext_resource type="Script" path="res://entities/player/player_stats.gd" id="1_01d8e"]
+[ext_resource type="Script" uid="uid://dx6766hnbi44l" path="res://entities/player/player_stats.gd" id="1_01d8e"]
 
 [resource]
 script = ExtResource("1_01d8e")
-max_run_speed = 580.0
-ground_accel = 7500.0
-ground_decel = 8000.0
-turn_accel = 10000.0
-air_accel = 4200.0
-air_decel = 2800.0
-time_to_apex = 0.3
-fall_gravity_multiplier = 2.0
-max_fall_speed = 1500.0
+max_run_speed = 780.0
+jump_height = 270.0
+time_to_apex = 0.29
+fall_gravity_multiplier = 3.7
 wall_jump_velocity_x = 580.0
-air_attack_cooldown = 0.25
+dash_distance = 400.0
+dash_duration = 0.18
+dash_invincibility_time = 0.22
+perfect_dodge_slow_mo_scale = 0.413
+side_hit_recoil = 20.0
+sword_rest_degrees = 120.0
+trail_alpha = 0.5

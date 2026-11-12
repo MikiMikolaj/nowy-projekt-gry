@@ -26,7 +26,7 @@ size = Vector2(128, 1152)
 size = Vector2(2048, 128)
 
 [node name="Stair1" parent="Level" unique_id=2096030790 instance=ExtResource("2_43xo0")]
-position = Vector2(1152, -128)
+position = Vector2(1052, -228)
 size = Vector2(192, 64)
 color = Color(0.47, 0.49, 0.55, 1)
 
@@ -49,7 +49,7 @@ position = Vector2(2176, -640)
 size = Vector2(64, 448)
 
 [node name="ShaftWallRight" parent="Level" unique_id=408618330 instance=ExtResource("2_43xo0")]
-position = Vector2(2496, -640)
+position = Vector2(2490, -835)
 size = Vector2(128, 640)
 
 [node name="ShaftLedge" parent="Level" unique_id=1118429255 instance=ExtResource("2_43xo0")]
@@ -110,7 +110,7 @@ position = Vector2(704, 0)
 position = Vector2(3712, 64)
 
 [node name="Player" parent="." unique_id=914471942 instance=ExtResource("2_6txw3")]
-position = Vector2(192, -48)
+position = Vector2(190, -48)
 
 [node name="GameCamera" parent="." unique_id=48149646 instance=ExtResource("3_43xo0")]
 limit_left = -128

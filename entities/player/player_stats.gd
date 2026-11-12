@@ -28,6 +28,12 @@ enum DashDirectionMode { HORIZONTAL, EIGHT_WAY }
 @export var coyote_time: float = 0.10
 @export var jump_buffer: float = 0.12
 
+@export_group("Double Jump")
+## Extra jumps allowed in the air before landing or touching a wall. 0 turns the double jump off.
+@export var air_jumps: int = 1
+## Peak height of a full (held) double jump, in px. Lower than jump_height so the ground jump stays primary.
+@export var double_jump_height: float = 220.0
+
 @export_group("Wall")
 @export var wall_slide_max_speed: float = 260.0
 @export var wall_jump_velocity_x: float = 520.0
@@ -136,6 +142,11 @@ var gravity: float:
 var jump_velocity: float:
 	get:
 		return 2.0 * jump_height / time_to_apex
+
+## Launch speed that reaches double_jump_height under the same rising gravity as the ground jump.
+var double_jump_velocity: float:
+	get:
+		return sqrt(2.0 * gravity * double_jump_height)
 
 var dash_speed: float:
 	get:
